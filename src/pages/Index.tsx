@@ -85,7 +85,7 @@ const Index = () => {
                 <Icon name="Zap" className="text-white" size={24} />
               </div>
               <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                БизнесАссистент
+                Купец в плюсе
               </span>
             </div>
             <div className="hidden md:flex items-center gap-6">
@@ -107,7 +107,7 @@ const Index = () => {
             🚀 Всё для бизнеса в одном месте
           </Badge>
           <h1 className="text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-purple-600 via-pink-600 to-orange-500 bg-clip-text text-transparent animate-gradient bg-[length:200%_200%]">
-            Удобный помощник для<br />успешного ведения бизнеса
+            Купец в плюсе —<br />ваш надёжный партнёр в бизнесе
           </h1>
           <p className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto">
             Наше приложение объединяет лучшие решения: надежная телефония, выгодные банковские продукты, 
@@ -372,7 +372,7 @@ const Index = () => {
                 <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center">
                   <Icon name="Zap" size={24} />
                 </div>
-                <span className="text-2xl font-bold">БизнесАссистент</span>
+                <span className="text-2xl font-bold">Купец в плюсе</span>
               </div>
               <p className="text-purple-200">Всё необходимое для эффективного развития вашего дела</p>
             </div>
@@ -402,7 +402,7 @@ const Index = () => {
             </div>
           </div>
           <div className="border-t border-white/20 pt-8 text-center text-purple-200">
-            <p>&copy; 2024 БизнесАссистент. Все права защищены.</p>
+            <p>&copy; 2024 Купец в плюсе. Все права защищены.</p>
           </div>
         </div>
       </footer>
