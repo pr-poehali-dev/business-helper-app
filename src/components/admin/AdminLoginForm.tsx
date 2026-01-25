@@ -15,6 +15,7 @@ const AdminLoginForm = ({ onLoginSuccess }: AdminLoginFormProps) => {
   const [loginForm, setLoginForm] = useState({ username: '', password: '' });
   const [loginError, setLoginError] = useState('');
   const [loginLoading, setLoginLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,14 +74,24 @@ const AdminLoginForm = ({ onLoginSuccess }: AdminLoginFormProps) => {
           </div>
           <div className="space-y-2">
             <Label htmlFor="admin-password">Пароль</Label>
-            <Input 
-              id="admin-password" 
-              type="password"
-              value={loginForm.password}
-              onChange={(e) => setLoginForm({...loginForm, password: e.target.value})}
-              placeholder="••••••••" 
-              required 
-            />
+            <div className="relative">
+              <Input 
+                id="admin-password" 
+                type={showPassword ? 'text' : 'password'}
+                value={loginForm.password}
+                onChange={(e) => setLoginForm({...loginForm, password: e.target.value})}
+                placeholder="••••••••" 
+                className="pr-10"
+                required 
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+              >
+                <Icon name={showPassword ? 'EyeOff' : 'Eye'} size={18} />
+              </button>
+            </div>
           </div>
           {loginError && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
