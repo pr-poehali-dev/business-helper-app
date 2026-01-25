@@ -66,6 +66,8 @@ const AdminLoginForm = ({ onLoginSuccess }: AdminLoginFormProps) => {
             <Input 
               id="admin-username" 
               type="text"
+              name="username"
+              autoComplete="username"
               value={loginForm.username}
               onChange={(e) => setLoginForm({...loginForm, username: e.target.value})}
               placeholder="admin" 
@@ -78,6 +80,8 @@ const AdminLoginForm = ({ onLoginSuccess }: AdminLoginFormProps) => {
               <Input 
                 id="admin-password" 
                 type={showPassword ? 'text' : 'password'}
+                name="password"
+                autoComplete="current-password"
                 value={loginForm.password}
                 onChange={(e) => setLoginForm({...loginForm, password: e.target.value})}
                 placeholder="••••••••" 
