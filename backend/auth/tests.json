@@ -1,0 +1,36 @@
+{
+  "tests": [
+    {
+      "name": "Valid admin login",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "username": "admin",
+        "password": "admin123"
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true,
+        "admin": {
+          "id": 0,
+          "username": "string"
+        }
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Invalid credentials",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "username": "wrong",
+        "password": "wrong"
+      },
+      "expectedStatus": 401,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

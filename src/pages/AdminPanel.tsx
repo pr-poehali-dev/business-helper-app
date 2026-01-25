@@ -18,8 +18,14 @@ interface Service {
 }
 
 const API_URL = 'https://functions.poehali.dev/8ac2f869-dcd9-4b3c-93cd-a81c3c14c86e';
+const AUTH_URL = 'https://functions.poehali.dev/0a6ed630-dcfc-40e7-9cb7-7388d47c8c38';
 
 const AdminPanel = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loginForm, setLoginForm] = useState({ username: '', password: '' });
+  const [loginError, setLoginError] = useState('');
+  const [loginLoading, setLoginLoading] = useState(false);
+
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
@@ -34,8 +40,52 @@ const AdminPanel = () => {
   });
 
   useEffect(() => {
-    loadServices();
+    const authStatus = localStorage.getItem('adminAuth');
+    if (authStatus === 'true') {
+      setIsAuthenticated(true);
+      loadServices();
+    } else {
+      setLoading(false);
+    }
   }, []);
+
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginError('');
+    setLoginLoading(true);
+
+    try {
+      const response = await fetch(AUTH_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: loginForm.username,
+          password: loginForm.password
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setLoginError(data.error || 'Ошибка авторизации');
+        return;
+      }
+
+      localStorage.setItem('adminAuth', 'true');
+      setIsAuthenticated(true);
+      loadServices();
+    } catch (error) {
+      setLoginError('Ошибка соединения с сервером');
+    } finally {
+      setLoginLoading(false);
+    }
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('adminAuth');
+    setIsAuthenticated(false);
+    setServices([]);
+  };
 
   const loadServices = async () => {
     try {
@@ -148,6 +198,80 @@ const AdminPanel = () => {
 
   const iconOptions = ['Wifi', 'Tv', 'Phone', 'Shield', 'Smartphone', 'Package', 'Zap', 'Globe', 'Video', 'Music'];
 
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex flex-col bg-gray-50">
+        <Header />
+        <main className="flex-1 flex items-center justify-center py-12">
+          <Card className="w-full max-w-md">
+            <CardHeader>
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Icon name="Lock" className="text-blue-600" size={32} />
+              </div>
+              <CardTitle className="text-2xl text-center">Вход в панель администратора</CardTitle>
+              <CardDescription className="text-center">
+                Введите логин и пароль для доступа
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleLogin} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="admin-username">Логин</Label>
+                  <Input 
+                    id="admin-username" 
+                    type="text"
+                    value={loginForm.username}
+                    onChange={(e) => setLoginForm({...loginForm, username: e.target.value})}
+                    placeholder="admin" 
+                    required 
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="admin-password">Пароль</Label>
+                  <Input 
+                    id="admin-password" 
+                    type="password"
+                    value={loginForm.password}
+                    onChange={(e) => setLoginForm({...loginForm, password: e.target.value})}
+                    placeholder="••••••••" 
+                    required 
+                  />
+                </div>
+                {loginError && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+                    {loginError}
+                  </div>
+                )}
+                <Button 
+                  type="submit" 
+                  className="w-full bg-blue-600 hover:bg-blue-700"
+                  disabled={loginLoading}
+                >
+                  {loginLoading ? (
+                    <>
+                      <Icon name="Loader2" className="mr-2 animate-spin" size={18} />
+                      Вход...
+                    </>
+                  ) : (
+                    <>
+                      <Icon name="LogIn" className="mr-2" size={18} />
+                      Войти
+                    </>
+                  )}
+                </Button>
+                <div className="text-center text-sm text-gray-600 mt-4">
+                  <p>Логин по умолчанию: <strong>admin</strong></p>
+                  <p>Пароль по умолчанию: <strong>admin123</strong></p>
+                </div>
+              </form>
+            </CardContent>
+          </Card>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Header />
@@ -160,82 +284,92 @@ const AdminPanel = () => {
               <p className="text-gray-600">Управление услугами платформы</p>
             </div>
             
-            <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="bg-blue-600 hover:bg-blue-700" onClick={resetForm}>
-                  <Icon name="Plus" className="mr-2" size={18} />
-                  Добавить услугу
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-lg">
-                <DialogHeader>
-                  <DialogTitle>Добавить новую услугу</DialogTitle>
-                  <DialogDescription>
-                    Заполните информацию о новой услуге
-                  </DialogDescription>
-                </DialogHeader>
-                <form onSubmit={handleAddService} className="space-y-4 mt-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="title">Название услуги</Label>
-                    <Input 
-                      id="title" 
-                      value={formData.title}
-                      onChange={(e) => setFormData({...formData, title: e.target.value})}
-                      placeholder="Интернет" 
-                      required 
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="description">Описание</Label>
-                    <Input 
-                      id="description" 
-                      value={formData.description}
-                      onChange={(e) => setFormData({...formData, description: e.target.value})}
-                      placeholder="Высокоскоростной интернет" 
-                      required 
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="price">Цена</Label>
-                    <Input 
-                      id="price" 
-                      value={formData.price}
-                      onChange={(e) => setFormData({...formData, price: e.target.value})}
-                      placeholder="500 ₽/мес" 
-                      required 
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="icon">Иконка</Label>
-                    <select
-                      id="icon"
-                      value={formData.icon}
-                      onChange={(e) => setFormData({...formData, icon: e.target.value})}
-                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                    >
-                      {iconOptions.map(icon => (
-                        <option key={icon} value={icon}>{icon}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="features">Особенности (каждая с новой строки)</Label>
-                    <textarea
-                      id="features"
-                      value={formData.features}
-                      onChange={(e) => setFormData({...formData, features: e.target.value})}
-                      placeholder="До 1 Гбит/с&#10;Безлимитный трафик&#10;Статический IP"
-                      className="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                      required
-                    />
-                  </div>
-                  <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
+            <div className="flex gap-3">
+              <Button 
+                variant="outline" 
+                onClick={handleLogout}
+                className="border-red-300 text-red-700 hover:bg-red-50"
+              >
+                <Icon name="LogOut" className="mr-2" size={18} />
+                Выйти
+              </Button>
+              <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button className="bg-blue-600 hover:bg-blue-700" onClick={resetForm}>
                     <Icon name="Plus" className="mr-2" size={18} />
                     Добавить услугу
                   </Button>
-                </form>
-              </DialogContent>
-            </Dialog>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-lg">
+                  <DialogHeader>
+                    <DialogTitle>Добавить новую услугу</DialogTitle>
+                    <DialogDescription>
+                      Заполните информацию о новой услуге
+                    </DialogDescription>
+                  </DialogHeader>
+                  <form onSubmit={handleAddService} className="space-y-4 mt-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="title">Название услуги</Label>
+                      <Input 
+                        id="title" 
+                        value={formData.title}
+                        onChange={(e) => setFormData({...formData, title: e.target.value})}
+                        placeholder="Интернет" 
+                        required 
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="description">Описание</Label>
+                      <Input 
+                        id="description" 
+                        value={formData.description}
+                        onChange={(e) => setFormData({...formData, description: e.target.value})}
+                        placeholder="Высокоскоростной интернет" 
+                        required 
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="price">Цена</Label>
+                      <Input 
+                        id="price" 
+                        value={formData.price}
+                        onChange={(e) => setFormData({...formData, price: e.target.value})}
+                        placeholder="500 ₽/мес" 
+                        required 
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="icon">Иконка</Label>
+                      <select
+                        id="icon"
+                        value={formData.icon}
+                        onChange={(e) => setFormData({...formData, icon: e.target.value})}
+                        className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      >
+                        {iconOptions.map(icon => (
+                          <option key={icon} value={icon}>{icon}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="features">Особенности (каждая с новой строки)</Label>
+                      <textarea
+                        id="features"
+                        value={formData.features}
+                        onChange={(e) => setFormData({...formData, features: e.target.value})}
+                        placeholder="До 1 Гбит/с&#10;Безлимитный трафик&#10;Статический IP"
+                        className="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                        required
+                      />
+                    </div>
+                    <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700">
+                      <Icon name="Plus" className="mr-2" size={18} />
+                      Добавить услугу
+                    </Button>
+                  </form>
+                </DialogContent>
+              </Dialog>
+            </div>
           </div>
 
           {loading ? (
