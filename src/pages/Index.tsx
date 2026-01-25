@@ -1,14 +1,47 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
 import AdvantagesSection from '@/components/AdvantagesSection';
+import ServicesSection from '@/components/ServicesSection';
 import CategoriesSection from '@/components/CategoriesSection';
 import PartnersNewsSection from '@/components/PartnersNewsSection';
 import CabinetFaqContactsSection from '@/components/CabinetFaqContactsSection';
 import Footer from '@/components/Footer';
 
+interface Service {
+  id: number;
+  title: string;
+  description: string;
+  price: string;
+  icon: string;
+  iconUrl?: string;
+  features: string[];
+}
+
+const API_URL = 'https://functions.poehali.dev/8ac2f869-dcd9-4b3c-93cd-a81c3c14c86e';
+
 const Index = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [services, setServices] = useState<Service[]>([]);
+  const [loadingServices, setLoadingServices] = useState(true);
+
+  useEffect(() => {
+    loadServices();
+  }, []);
+
+  const loadServices = async () => {
+    try {
+      setLoadingServices(true);
+      const response = await fetch(API_URL);
+      if (!response.ok) throw new Error('Ошибка загрузки услуг');
+      const data = await response.json();
+      setServices(data);
+    } catch (error) {
+      console.error('Ошибка при загрузке услуг:', error);
+    } finally {
+      setLoadingServices(false);
+    }
+  };
 
   const categories = [
     { id: 'bank', name: 'Банковские услуги', icon: 'Building2', color: 'from-blue-500 to-cyan-600', count: 15 },
@@ -306,6 +339,7 @@ const Index = () => {
       <Header />
       <HeroSection />
       <AdvantagesSection />
+      <ServicesSection services={services} loading={loadingServices} />
       <CategoriesSection
         categories={categories}
         products={filteredProducts}
