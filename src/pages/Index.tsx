@@ -11,6 +11,10 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import Header from '@/components/Header';
+import HeroSection from '@/components/HeroSection';
+import CategoriesSection from '@/components/CategoriesSection';
+import Footer from '@/components/Footer';
 
 const Index = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -195,88 +199,8 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
-      <header className="bg-white shadow-md sticky top-0 z-50 border-b-4 border-orange-400">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center shadow-lg">
-                <Icon name="Store" className="text-white" size={28} />
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-orange-600">Купец в плюсе</h1>
-                <p className="text-xs text-gray-600">Агрегатор бизнес-услуг</p>
-              </div>
-            </div>
-            <nav className="hidden lg:flex items-center gap-6">
-              <a href="#categories" className="text-gray-700 hover:text-orange-600 transition-colors font-medium">Категории</a>
-              <a href="#partners" className="text-gray-700 hover:text-orange-600 transition-colors font-medium">Партнёры</a>
-              <a href="#news" className="text-gray-700 hover:text-orange-600 transition-colors font-medium">Новости</a>
-              <a href="#faq" className="text-gray-700 hover:text-orange-600 transition-colors font-medium">FAQ</a>
-              <a href="#contacts" className="text-gray-700 hover:text-orange-600 transition-colors font-medium">Контакты</a>
-            </nav>
-            <div className="flex items-center gap-3">
-              <Button variant="outline" className="hidden md:flex border-orange-300 text-orange-600 hover:bg-orange-50">
-                <Icon name="User" className="mr-2" size={18} />
-                Войти
-              </Button>
-              <Button className="bg-gradient-to-r from-orange-500 to-amber-600 text-white hover:opacity-90 shadow-lg">
-                <Icon name="UserPlus" className="mr-2" size={18} />
-                Регистрация
-              </Button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <section className="bg-gradient-to-r from-orange-600 via-amber-500 to-yellow-500 text-white py-20 px-4 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-10 left-10 w-32 h-32 bg-white rounded-full blur-3xl"></div>
-          <div className="absolute bottom-10 right-10 w-48 h-48 bg-white rounded-full blur-3xl"></div>
-        </div>
-        <div className="container mx-auto relative z-10">
-          <div className="max-w-4xl mx-auto text-center animate-fade-in">
-            <Badge className="mb-6 bg-white text-orange-600 border-0 text-base px-6 py-2 shadow-lg">
-              🚀 Агрегатор лучших решений для бизнеса
-            </Badge>
-            <h2 className="text-5xl md:text-7xl font-bold mb-6 drop-shadow-lg">
-              Купец в плюсе —<br />
-              все бизнес-услуги в одном месте
-            </h2>
-            <p className="text-xl md:text-2xl mb-10 opacity-95 max-w-3xl mx-auto">
-              Банковские счета, телефония, CRM-системы, мобильная связь — подключайте лучшие сервисы от проверенных партнёров с выгодой до 100%
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-              <Button size="lg" className="bg-white text-orange-600 hover:bg-orange-50 text-lg px-10 py-7 shadow-xl">
-                <Icon name="Rocket" className="mr-2" size={22} />
-                Подобрать решение
-              </Button>
-              <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white/10 text-lg px-10 py-7 backdrop-blur">
-                <Icon name="Play" className="mr-2" size={22} />
-                Смотреть видео
-              </Button>
-            </div>
-            
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-16">
-              <div className="bg-white/10 backdrop-blur rounded-2xl p-6 border border-white/20">
-                <div className="text-4xl font-bold mb-2">150+</div>
-                <div className="text-sm opacity-90">Партнёров</div>
-              </div>
-              <div className="bg-white/10 backdrop-blur rounded-2xl p-6 border border-white/20">
-                <div className="text-4xl font-bold mb-2">50К+</div>
-                <div className="text-sm opacity-90">Клиентов</div>
-              </div>
-              <div className="bg-white/10 backdrop-blur rounded-2xl p-6 border border-white/20">
-                <div className="text-4xl font-bold mb-2">100%</div>
-                <div className="text-sm opacity-90">Бесплатно</div>
-              </div>
-              <div className="bg-white/10 backdrop-blur rounded-2xl p-6 border border-white/20">
-                <div className="text-4xl font-bold mb-2">24/7</div>
-                <div className="text-sm opacity-90">Поддержка</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <Header />
+      <HeroSection />
 
       <section className="py-16 px-4 bg-white">
         <div className="container mx-auto">
@@ -322,110 +246,12 @@ const Index = () => {
         </div>
       </section>
 
-      <section id="categories" className="py-16 px-4 bg-gradient-to-br from-gray-50 to-orange-50">
-        <div className="container mx-auto">
-          <div className="text-center mb-12">
-            <h3 className="text-4xl font-bold text-gray-800 mb-4">Категории услуг</h3>
-            <p className="text-xl text-gray-600">Выберите нужное направление для вашего бизнеса</p>
-          </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            {categories.map((cat) => (
-              <Card
-                key={cat.id}
-                className="border-2 hover:border-orange-400 transition-all hover:shadow-2xl cursor-pointer group"
-                onClick={() => setSelectedCategory(cat.id)}
-              >
-                <CardHeader className="text-center">
-                  <div className={`w-20 h-20 rounded-3xl bg-gradient-to-br ${cat.color} flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform shadow-lg`}>
-                    <Icon name={cat.icon as any} className="text-white" size={40} />
-                  </div>
-                  <CardTitle className="text-xl mb-2">{cat.name}</CardTitle>
-                  <CardDescription>
-                    <Badge variant="secondary">{cat.count} предложений</Badge>
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-            ))}
-          </div>
-
-          <div className="mb-8">
-            <h4 className="text-3xl font-bold text-gray-800 mb-6">
-              {selectedCategory === 'all' ? 'Популярные предложения' : categories.find(c => c.id === selectedCategory)?.name}
-            </h4>
-          </div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredProducts.map((product, idx) => (
-              <Card
-                key={product.id}
-                className="border-2 hover:border-orange-400 transition-all hover:shadow-2xl group relative overflow-hidden"
-                style={{ animationDelay: `${idx * 0.05}s` }}
-              >
-                {product.badge && (
-                  <div className="absolute top-3 right-3 z-10">
-                    <Badge className={`${
-                      product.badge === 'Хит продаж' ? 'bg-red-500' :
-                      product.badge === 'Новинка' ? 'bg-green-500' :
-                      product.badge === 'Акция' ? 'bg-purple-500' :
-                      'bg-orange-500'
-                    } text-white border-0 shadow-lg font-semibold`}>
-                      {product.badge}
-                    </Badge>
-                  </div>
-                )}
-                
-                <CardHeader className="pb-4">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="text-4xl">{product.partnerLogo}</div>
-                    <div>
-                      <div className="text-sm text-gray-600">Партнёр</div>
-                      <div className="font-bold text-gray-800">{product.partner}</div>
-                    </div>
-                  </div>
-                  <CardTitle className="text-2xl mb-2">{product.title}</CardTitle>
-                  <CardDescription className="text-base">{product.description}</CardDescription>
-                </CardHeader>
-                
-                <CardContent>
-                  <div className="mb-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      {[...Array(5)].map((_, i) => (
-                        <Icon key={i} name="Star" size={16} className={i < Math.floor(product.rating) ? 'text-yellow-500 fill-yellow-500' : 'text-gray-300'} />
-                      ))}
-                      <span className="text-sm text-gray-600">({product.reviews} отзывов)</span>
-                    </div>
-                  </div>
-
-                  <div className="mb-6">
-                    <div className="flex items-end gap-3 mb-2">
-                      <span className="text-4xl font-bold text-green-600">{product.price}</span>
-                      {product.oldPrice && <span className="text-lg text-gray-400 line-through mb-2">{product.oldPrice}</span>}
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-green-600 font-semibold">
-                      <Icon name="TrendingDown" size={16} />
-                      Экономия {product.oldPrice}
-                    </div>
-                  </div>
-
-                  <ul className="space-y-2 mb-6">
-                    {product.features.map((feature, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
-                        <Icon name="CheckCircle2" className="text-green-500 flex-shrink-0 mt-0.5" size={16} />
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-
-                  <Button className="w-full bg-gradient-to-r from-orange-500 to-amber-600 text-white hover:opacity-90 shadow-md">
-                    <Icon name="ShoppingCart" className="mr-2" size={18} />
-                    Подключить
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
+      <CategoriesSection
+        categories={categories}
+        products={filteredProducts}
+        selectedCategory={selectedCategory}
+        onCategoryChange={setSelectedCategory}
+      />
 
       <section id="partners" className="py-16 px-4 bg-white">
         <div className="container mx-auto">
@@ -678,73 +504,7 @@ const Index = () => {
         </div>
       </section>
 
-      <footer className="bg-gradient-to-br from-gray-900 to-gray-800 text-white py-12 px-4">
-        <div className="container mx-auto">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center">
-                  <Icon name="Store" size={24} />
-                </div>
-                <div>
-                  <h4 className="text-xl font-bold">Купец в плюсе</h4>
-                  <p className="text-xs text-gray-400">Агрегатор бизнес-услуг</p>
-                </div>
-              </div>
-              <p className="text-gray-400 text-sm mb-4">Всё необходимое для эффективного развития вашего бизнеса в одном месте</p>
-              <div className="flex gap-3">
-                <Button size="icon" variant="outline" className="border-gray-600 hover:bg-gray-700">
-                  <Icon name="MessageCircle" size={18} />
-                </Button>
-                <Button size="icon" variant="outline" className="border-gray-600 hover:bg-gray-700">
-                  <Icon name="Send" size={18} />
-                </Button>
-                <Button size="icon" variant="outline" className="border-gray-600 hover:bg-gray-700">
-                  <Icon name="AtSign" size={18} />
-                </Button>
-              </div>
-            </div>
-            <div>
-              <h4 className="font-bold mb-4 text-lg">Услуги</h4>
-              <ul className="space-y-2 text-gray-400 text-sm">
-                <li><a href="#categories" className="hover:text-white transition-colors">Банковские услуги</a></li>
-                <li><a href="#categories" className="hover:text-white transition-colors">Телефония</a></li>
-                <li><a href="#categories" className="hover:text-white transition-colors">CRM и автоматизация</a></li>
-                <li><a href="#categories" className="hover:text-white transition-colors">Мобильные операторы</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold mb-4 text-lg">Компания</h4>
-              <ul className="space-y-2 text-gray-400 text-sm">
-                <li><a href="#partners" className="hover:text-white transition-colors">Наши партнёры</a></li>
-                <li><a href="#news" className="hover:text-white transition-colors">Новости и акции</a></li>
-                <li><a href="#faq" className="hover:text-white transition-colors">FAQ</a></li>
-                <li><a href="#contacts" className="hover:text-white transition-colors">Контакты</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold mb-4 text-lg">Поддержка</h4>
-              <ul className="space-y-3 text-gray-400 text-sm">
-                <li className="flex items-center gap-2">
-                  <Icon name="Phone" size={16} />
-                  8 800 555-35-35
-                </li>
-                <li className="flex items-center gap-2">
-                  <Icon name="Mail" size={16} />
-                  info@kupecplus.ru
-                </li>
-                <li className="flex items-center gap-2">
-                  <Icon name="Clock" size={16} />
-                  24/7 онлайн
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-gray-700 pt-8 text-center text-gray-400 text-sm">
-            <p>&copy; 2024 Купец в плюсе. Все права защищены. Агрегатор бизнес-услуг для малого и среднего бизнеса.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };
