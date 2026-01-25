@@ -3,31 +3,31 @@ import Icon from '@/components/ui/icon';
 
 const Header = () => {
   return (
-    <header className="bg-white shadow-md sticky top-0 z-50 border-b-4 border-orange-400">
+    <header className="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-200">
       <div className="container mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center shadow-lg">
-              <Icon name="Store" className="text-white" size={28} />
+            <div className="w-11 h-11 rounded bg-blue-600 flex items-center justify-center">
+              <Icon name="Building2" className="text-white" size={24} />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-orange-600">Купец в плюсе</h1>
-              <p className="text-xs text-gray-600">Агрегатор бизнес-услуг</p>
+              <h1 className="text-xl font-semibold text-gray-900">Купец в плюсе</h1>
+              <p className="text-xs text-gray-500">Агрегатор бизнес-услуг</p>
             </div>
           </div>
-          <nav className="hidden lg:flex items-center gap-6">
-            <a href="#categories" className="text-gray-700 hover:text-orange-600 transition-colors font-medium">Категории</a>
-            <a href="#partners" className="text-gray-700 hover:text-orange-600 transition-colors font-medium">Партнёры</a>
-            <a href="#news" className="text-gray-700 hover:text-orange-600 transition-colors font-medium">Новости</a>
-            <a href="#faq" className="text-gray-700 hover:text-orange-600 transition-colors font-medium">FAQ</a>
-            <a href="#contacts" className="text-gray-700 hover:text-orange-600 transition-colors font-medium">Контакты</a>
+          <nav className="hidden lg:flex items-center gap-8">
+            <a href="#categories" className="text-sm text-gray-600 hover:text-blue-600 transition-colors font-medium">Услуги</a>
+            <a href="#partners" className="text-sm text-gray-600 hover:text-blue-600 transition-colors font-medium">Партнёры</a>
+            <a href="#news" className="text-sm text-gray-600 hover:text-blue-600 transition-colors font-medium">Новости</a>
+            <a href="#faq" className="text-sm text-gray-600 hover:text-blue-600 transition-colors font-medium">FAQ</a>
+            <a href="#contacts" className="text-sm text-gray-600 hover:text-blue-600 transition-colors font-medium">Контакты</a>
           </nav>
           <div className="flex items-center gap-3">
-            <Button variant="outline" className="hidden md:flex border-orange-300 text-orange-600 hover:bg-orange-50">
+            <Button variant="outline" className="hidden md:flex border-gray-300 text-gray-700 hover:bg-gray-50">
               <Icon name="User" className="mr-2" size={18} />
               Войти
             </Button>
-            <Button className="bg-gradient-to-r from-orange-500 to-amber-600 text-white hover:opacity-90 shadow-lg">
+            <Button className="bg-blue-600 text-white hover:bg-blue-700">
               <Icon name="UserPlus" className="mr-2" size={18} />
               Регистрация
             </Button>

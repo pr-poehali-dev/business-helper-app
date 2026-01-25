@@ -8,8 +8,8 @@ const Footer = () => {
         <div className="grid md:grid-cols-4 gap-8 mb-8">
           <div>
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-amber-600 flex items-center justify-center">
-                <Icon name="Store" size={24} />
+              <div className="w-10 h-10 rounded bg-blue-600 flex items-center justify-center">
+                <Icon name="Building2" size={24} />
               </div>
               <div>
                 <h4 className="text-xl font-bold">Купец в плюсе</h4>

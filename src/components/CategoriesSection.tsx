@@ -35,7 +35,7 @@ interface CategoriesSectionProps {
 
 const CategoriesSection = ({ categories, products, selectedCategory, onCategoryChange }: CategoriesSectionProps) => {
   return (
-    <section id="categories" className="py-16 px-4 bg-gradient-to-br from-gray-50 to-orange-50">
+    <section id="categories" className="py-16 px-4 bg-white">
       <div className="container mx-auto">
         <div className="text-center mb-12">
           <h3 className="text-4xl font-bold text-gray-800 mb-4">Категории услуг</h3>
@@ -45,7 +45,7 @@ const CategoriesSection = ({ categories, products, selectedCategory, onCategoryC
           {categories.map((cat) => (
             <Card
               key={cat.id}
-              className="border-2 hover:border-orange-400 transition-all hover:shadow-2xl cursor-pointer group"
+              className="border border-gray-200 hover:border-blue-600 transition-all hover:shadow-lg cursor-pointer group"
               onClick={() => onCategoryChange(cat.id)}
             >
               <CardHeader className="text-center">
@@ -129,7 +129,7 @@ const CategoriesSection = ({ categories, products, selectedCategory, onCategoryC
                   ))}
                 </ul>
 
-                <Button className="w-full bg-gradient-to-r from-orange-500 to-amber-600 text-white hover:opacity-90 shadow-md">
+                <Button className="w-full bg-blue-600 text-white hover:bg-blue-700">
                   <Icon name="ShoppingCart" className="mr-2" size={18} />
                   Подключить
                 </Button>
