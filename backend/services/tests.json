@@ -26,6 +26,7 @@
         "description": "string",
         "price": "string",
         "icon": "string",
+        "iconUrl": "string",
         "features": []
       },
       "bodyMatcher": "partial"

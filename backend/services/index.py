@@ -26,7 +26,7 @@ def handler(event: dict, context) -> dict:
         
         if method == 'GET':
             cur.execute("""
-                SELECT id, title, description, price, icon, features, 
+                SELECT id, title, description, price, icon, icon_url, features, 
                        created_at, updated_at 
                 FROM t_p81470733_business_helper_app.services 
                 ORDER BY created_at DESC
@@ -41,6 +41,7 @@ def handler(event: dict, context) -> dict:
                     'description': service['description'],
                     'price': service['price'],
                     'icon': service['icon'],
+                    'iconUrl': service['icon_url'],
                     'features': service['features'],
                     'created_at': service['created_at'].isoformat() if service['created_at'] else None,
                     'updated_at': service['updated_at'].isoformat() if service['updated_at'] else None
@@ -64,6 +65,7 @@ def handler(event: dict, context) -> dict:
             description = body.get('description')
             price = body.get('price')
             icon = body.get('icon', 'Package')
+            icon_url = body.get('iconUrl')
             features = body.get('features', [])
             
             if not all([title, description, price]):
@@ -78,10 +80,10 @@ def handler(event: dict, context) -> dict:
             
             cur.execute("""
                 INSERT INTO t_p81470733_business_helper_app.services 
-                (title, description, price, icon, features) 
-                VALUES (%s, %s, %s, %s, %s)
-                RETURNING id, title, description, price, icon, features, created_at, updated_at
-            """, (title, description, price, icon, features))
+                (title, description, price, icon, icon_url, features) 
+                VALUES (%s, %s, %s, %s, %s, %s)
+                RETURNING id, title, description, price, icon, icon_url, features, created_at, updated_at
+            """, (title, description, price, icon, icon_url, features))
             
             new_service = cur.fetchone()
             conn.commit()
@@ -100,6 +102,7 @@ def handler(event: dict, context) -> dict:
                     'description': new_service['description'],
                     'price': new_service['price'],
                     'icon': new_service['icon'],
+                    'iconUrl': new_service['icon_url'],
                     'features': new_service['features'],
                     'created_at': new_service['created_at'].isoformat() if new_service['created_at'] else None,
                     'updated_at': new_service['updated_at'].isoformat() if new_service['updated_at'] else None
@@ -113,6 +116,7 @@ def handler(event: dict, context) -> dict:
             description = body.get('description')
             price = body.get('price')
             icon = body.get('icon', 'Package')
+            icon_url = body.get('iconUrl')
             features = body.get('features', [])
             
             if not all([service_id, title, description, price]):
@@ -127,11 +131,11 @@ def handler(event: dict, context) -> dict:
             
             cur.execute("""
                 UPDATE t_p81470733_business_helper_app.services 
-                SET title = %s, description = %s, price = %s, icon = %s, 
+                SET title = %s, description = %s, price = %s, icon = %s, icon_url = %s, 
                     features = %s, updated_at = CURRENT_TIMESTAMP
                 WHERE id = %s
-                RETURNING id, title, description, price, icon, features, created_at, updated_at
-            """, (title, description, price, icon, features, service_id))
+                RETURNING id, title, description, price, icon, icon_url, features, created_at, updated_at
+            """, (title, description, price, icon, icon_url, features, service_id))
             
             updated_service = cur.fetchone()
             
@@ -163,6 +167,7 @@ def handler(event: dict, context) -> dict:
                     'description': updated_service['description'],
                     'price': updated_service['price'],
                     'icon': updated_service['icon'],
+                    'iconUrl': updated_service['icon_url'],
                     'features': updated_service['features'],
                     'created_at': updated_service['created_at'].isoformat() if updated_service['created_at'] else None,
                     'updated_at': updated_service['updated_at'].isoformat() if updated_service['updated_at'] else None

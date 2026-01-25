@@ -14,6 +14,7 @@ interface Service {
   description: string;
   price: string;
   icon: string;
+  iconUrl?: string;
   features: string[];
 }
 
@@ -31,6 +32,7 @@ const AdminPanel = () => {
     description: '',
     price: '',
     icon: 'Package',
+    iconUrl: undefined as string | undefined,
     features: ''
   });
 
@@ -76,6 +78,7 @@ const AdminPanel = () => {
       description: '',
       price: '',
       icon: 'Package',
+      iconUrl: undefined,
       features: ''
     });
     setEditingService(null);
@@ -92,6 +95,7 @@ const AdminPanel = () => {
           description: formData.description,
           price: formData.price,
           icon: formData.icon,
+          iconUrl: formData.iconUrl,
           features: formData.features.split('\n').filter(f => f.trim())
         })
       });
@@ -121,6 +125,7 @@ const AdminPanel = () => {
           description: formData.description,
           price: formData.price,
           icon: formData.icon,
+          iconUrl: formData.iconUrl,
           features: formData.features.split('\n').filter(f => f.trim())
         })
       });
@@ -160,6 +165,7 @@ const AdminPanel = () => {
       description: service.description,
       price: service.price,
       icon: service.icon,
+      iconUrl: service.iconUrl,
       features: service.features.join('\n')
     });
   };

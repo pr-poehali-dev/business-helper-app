@@ -9,6 +9,7 @@ interface Service {
   description: string;
   price: string;
   icon: string;
+  iconUrl?: string;
   features: string[];
 }
 
@@ -24,7 +25,11 @@ const ServiceCard = ({ service, onEdit, onDelete }: ServiceCardProps) => {
       <CardHeader>
         <div className="flex items-start justify-between">
           <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-            <Icon name={service.icon} className="text-blue-600" size={24} />
+            {service.iconUrl ? (
+              <img src={service.iconUrl} alt={service.title} className="w-full h-full object-cover rounded-lg" />
+            ) : (
+              <Icon name={service.icon} className="text-blue-600" size={24} />
+            )}
           </div>
           <div className="flex gap-2">
             <DialogTrigger asChild>

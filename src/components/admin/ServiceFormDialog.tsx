@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,6 +11,7 @@ interface Service {
   description: string;
   price: string;
   icon: string;
+  iconUrl?: string;
   features: string[];
 }
 
@@ -18,6 +20,7 @@ interface ServiceFormData {
   description: string;
   price: string;
   icon: string;
+  iconUrl?: string;
   features: string;
 }
 
@@ -31,6 +34,8 @@ interface ServiceFormDialogProps {
   iconOptions: string[];
 }
 
+const UPLOAD_ICON_URL = 'https://functions.poehali.dev/f75906e6-db65-47f7-a1be-4de4c16eb2df';
+
 const ServiceFormDialog = ({
   open,
   onOpenChange,
@@ -41,6 +46,53 @@ const ServiceFormDialog = ({
   iconOptions
 }: ServiceFormDialogProps) => {
   const isEditing = editingService !== null;
+  const [uploadingIcon, setUploadingIcon] = useState(false);
+  const [iconPreview, setIconPreview] = useState<string | null>(null);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('Пожалуйста, выберите изображение');
+      return;
+    }
+
+    setUploadingIcon(true);
+
+    try {
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        const base64 = event.target?.result as string;
+        const base64Data = base64.split(',')[1];
+
+        const response = await fetch(UPLOAD_ICON_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            image: base64Data,
+            contentType: file.type
+          })
+        });
+
+        if (!response.ok) throw new Error('Ошибка загрузки');
+
+        const data = await response.json();
+        setFormData({ ...formData, iconUrl: data.url });
+        setIconPreview(data.url);
+      };
+      reader.readAsDataURL(file);
+    } catch (error) {
+      alert('Не удалось загрузить изображение');
+    } finally {
+      setUploadingIcon(false);
+    }
+  };
+
+  const removeCustomIcon = () => {
+    setFormData({ ...formData, iconUrl: undefined });
+    setIconPreview(null);
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -83,17 +135,64 @@ const ServiceFormDialog = ({
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor={isEditing ? 'edit-icon' : 'icon'}>Иконка</Label>
-            <select
-              id={isEditing ? 'edit-icon' : 'icon'}
-              value={formData.icon}
-              onChange={(e) => setFormData({...formData, icon: e.target.value})}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              {iconOptions.map(icon => (
-                <option key={icon} value={icon}>{icon}</option>
-              ))}
-            </select>
+            <Label>Иконка</Label>
+            <div className="space-y-3">
+              {(formData.iconUrl || iconPreview) ? (
+                <div className="flex items-center gap-3 p-3 border rounded-md">
+                  <img 
+                    src={formData.iconUrl || iconPreview || ''} 
+                    alt="Custom icon" 
+                    className="w-12 h-12 object-cover rounded"
+                  />
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">Пользовательская иконка</p>
+                    <p className="text-xs text-gray-500">Загружено из файла</p>
+                  </div>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="outline"
+                    onClick={removeCustomIcon}
+                    className="text-red-600 hover:text-red-700"
+                  >
+                    <Icon name="X" size={16} />
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <select
+                    id={isEditing ? 'edit-icon' : 'icon'}
+                    value={formData.icon}
+                    onChange={(e) => setFormData({...formData, icon: e.target.value})}
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    {iconOptions.map(icon => (
+                      <option key={icon} value={icon}>{icon}</option>
+                    ))}
+                  </select>
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 h-px bg-gray-200" />
+                    <span className="text-xs text-gray-500">или</span>
+                    <div className="flex-1 h-px bg-gray-200" />
+                  </div>
+                  <div>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      disabled={uploadingIcon}
+                      className="cursor-pointer"
+                    />
+                    {uploadingIcon && (
+                      <p className="text-xs text-blue-600 mt-1 flex items-center gap-1">
+                        <Icon name="Loader2" className="animate-spin" size={12} />
+                        Загрузка...
+                      </p>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
           </div>
           <div className="space-y-2">
             <Label htmlFor={isEditing ? 'edit-features' : 'features'}>Особенности (каждая с новой строки)</Label>
