@@ -1,0 +1,1 @@
+UPDATE admins SET username = 'stm-63s@yandex.ru' WHERE id = 1;
