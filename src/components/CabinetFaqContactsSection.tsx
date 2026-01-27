@@ -1,9 +1,10 @@
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import Icon from '@/components/ui/icon';
-import { useNavigate } from 'react-router-dom';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import {
   Accordion,
   AccordionContent,
@@ -21,10 +22,10 @@ interface CabinetFaqContactsSectionProps {
 }
 
 const CabinetFaqContactsSection = ({ faq }: CabinetFaqContactsSectionProps) => {
-  const navigate = useNavigate();
+  const [cabinetDialogOpen, setCabinetDialogOpen] = useState(false);
 
   const handleCabinetClick = () => {
-    navigate('/admin');
+    setCabinetDialogOpen(true);
   };
 
   return (
@@ -71,6 +72,53 @@ const CabinetFaqContactsSection = ({ faq }: CabinetFaqContactsSectionProps) => {
           </div>
         </div>
       </section>
+
+      <Dialog open={cabinetDialogOpen} onOpenChange={setCabinetDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-2xl">Личный кабинет</DialogTitle>
+            <DialogDescription>
+              Функционал личного кабинета находится в разработке
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-6 text-center">
+            <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Icon name="LayoutDashboard" className="text-purple-600" size={40} />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Скоро будет доступно!</h3>
+            <p className="text-gray-600 mb-6">
+              Мы работаем над созданием удобного личного кабинета для управления вашими услугами.
+            </p>
+            <div className="space-y-3 text-left bg-gray-50 rounded-lg p-4">
+              <div className="flex items-center gap-3">
+                <Icon name="Check" className="text-green-500" size={20} />
+                <span className="text-sm text-gray-700">Управление подписками</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Icon name="Check" className="text-green-500" size={20} />
+                <span className="text-sm text-gray-700">История платежей и счета</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Icon name="Check" className="text-green-500" size={20} />
+                <span className="text-sm text-gray-700">Настройки профиля</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Icon name="Check" className="text-green-500" size={20} />
+                <span className="text-sm text-gray-700">Техподдержка 24/7</span>
+              </div>
+            </div>
+            <p className="text-sm text-gray-500 mt-4">
+              Чтобы узнать о запуске первыми, оставьте заявку в разделе "Связаться с нами"
+            </p>
+          </div>
+          <Button 
+            onClick={() => setCabinetDialogOpen(false)} 
+            className="w-full bg-purple-600 hover:bg-purple-700"
+          >
+            Понятно
+          </Button>
+        </DialogContent>
+      </Dialog>
 
       <section id="faq" className="py-16 px-4 bg-white">
         <div className="container mx-auto max-w-4xl">
