@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import Icon from '@/components/ui/icon';
+import { useNavigate } from 'react-router-dom';
 import {
   Accordion,
   AccordionContent,
@@ -20,6 +21,12 @@ interface CabinetFaqContactsSectionProps {
 }
 
 const CabinetFaqContactsSection = ({ faq }: CabinetFaqContactsSectionProps) => {
+  const navigate = useNavigate();
+
+  const handleCabinetClick = () => {
+    navigate('/admin');
+  };
+
   return (
     <>
       <section id="cabinet" className="py-16 px-4 bg-gradient-to-r from-purple-600 to-pink-600 text-white">
@@ -53,7 +60,11 @@ const CabinetFaqContactsSection = ({ faq }: CabinetFaqContactsSectionProps) => {
                 </CardHeader>
               </Card>
             </div>
-            <Button size="lg" className="bg-white text-purple-600 hover:bg-gray-100 text-lg px-10 py-7 shadow-xl">
+            <Button 
+              size="lg" 
+              className="bg-white text-purple-600 hover:bg-gray-100 text-lg px-10 py-7 shadow-xl"
+              onClick={handleCabinetClick}
+            >
               <Icon name="LogIn" className="mr-2" size={22} />
               Войти в кабинет
             </Button>
