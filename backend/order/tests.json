@@ -1,0 +1,38 @@
+{
+  "tests": [
+    {
+      "name": "Successful order creation",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "service": "Создание чат-ботов",
+        "price": "от 15 000 ₽",
+        "name": "Иван Петров",
+        "phone": "+7 (999) 123-45-67",
+        "email": "ivan@example.com",
+        "company": "ООО Тест",
+        "comment": "Нужен бот для Telegram"
+      },
+      "expectedStatus": 201,
+      "expectedBody": {
+        "success": true,
+        "orderId": "number",
+        "message": "string"
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Missing required fields",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "service": "Создание чат-ботов"
+      },
+      "expectedStatus": 400,
+      "expectedBody": {
+        "error": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

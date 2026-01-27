@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
+import ServiceOrderDialog from '@/components/ServiceOrderDialog';
 
 interface Service {
   id: number;
@@ -18,6 +20,13 @@ interface ServicesSectionProps {
 }
 
 const ServicesSection = ({ services, loading }: ServicesSectionProps) => {
+  const [orderDialogOpen, setOrderDialogOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
+
+  const handleOrderClick = (service: Service) => {
+    setSelectedService(service);
+    setOrderDialogOpen(true);
+  };
   if (loading) {
     return (
       <section className="py-16 px-4 bg-gradient-to-br from-blue-50 to-purple-50">
@@ -89,14 +98,26 @@ const ServicesSection = ({ services, loading }: ServicesSectionProps) => {
                   ))}
                 </ul>
 
-                <Button className="w-full bg-blue-600 text-white hover:bg-blue-700">
-                  <Icon name="ArrowRight" className="mr-2" size={18} />
-                  Подключить
+                <Button 
+                  className="w-full bg-blue-600 text-white hover:bg-blue-700"
+                  onClick={() => handleOrderClick(service)}
+                >
+                  <Icon name="ShoppingCart" className="mr-2" size={18} />
+                  Заказать
                 </Button>
               </CardContent>
             </Card>
           ))}
         </div>
+
+        {selectedService && (
+          <ServiceOrderDialog
+            open={orderDialogOpen}
+            onOpenChange={setOrderDialogOpen}
+            serviceName={selectedService.title}
+            servicePrice={selectedService.price}
+          />
+        )}
       </div>
     </section>
   );
