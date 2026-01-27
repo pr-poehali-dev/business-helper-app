@@ -1,0 +1,28 @@
+{
+  "tests": [
+    {
+      "name": "Get all partner offers",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200
+    },
+    {
+      "name": "Create partner offer",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "category": "bank",
+        "partner": "Test Bank",
+        "partnerLogo": "🏦",
+        "title": "Test Offer",
+        "description": "Test description",
+        "price": "0 ₽",
+        "oldPrice": "1000 ₽",
+        "features": ["Feature 1", "Feature 2"],
+        "rating": 4.5,
+        "reviews": 100
+      },
+      "expectedStatus": 201
+    }
+  ]
+}

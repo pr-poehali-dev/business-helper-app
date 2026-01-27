@@ -18,15 +18,32 @@ interface Service {
   features: string[];
 }
 
+interface PartnerOffer {
+  id: number;
+  category: string;
+  partner: string;
+  partnerLogo: string;
+  title: string;
+  description: string;
+  price: string;
+  oldPrice?: string;
+  features: string[];
+  rating: number;
+  reviews: number;
+}
+
 const API_URL = 'https://functions.poehali.dev/8ac2f869-dcd9-4b3c-93cd-a81c3c14c86e';
+const PARTNER_OFFERS_API_URL = 'https://functions.poehali.dev/9b132aca-4d30-44b8-a681-725b7d71264d';
 
 const Index = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [services, setServices] = useState<Service[]>([]);
+  const [partnerOffers, setPartnerOffers] = useState<PartnerOffer[]>([]);
   const [loadingServices, setLoadingServices] = useState(true);
 
   useEffect(() => {
     loadServices();
+    loadPartnerOffers();
   }, []);
 
   const loadServices = async () => {
@@ -40,6 +57,17 @@ const Index = () => {
       console.error('Ошибка при загрузке услуг:', error);
     } finally {
       setLoadingServices(false);
+    }
+  };
+
+  const loadPartnerOffers = async () => {
+    try {
+      const response = await fetch(PARTNER_OFFERS_API_URL);
+      if (!response.ok) throw new Error('Ошибка загрузки предложений');
+      const data = await response.json();
+      setPartnerOffers(data);
+    } catch (error) {
+      console.error('Ошибка при загрузке предложений:', error);
     }
   };
 
@@ -331,8 +359,8 @@ const Index = () => {
   ];
 
   const filteredProducts = selectedCategory === 'all'
-    ? products
-    : products.filter(p => p.category === selectedCategory);
+    ? partnerOffers
+    : partnerOffers.filter(p => p.category === selectedCategory);
 
   return (
     <div className="min-h-screen bg-gray-50">
