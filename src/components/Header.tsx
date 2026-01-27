@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import Icon from '@/components/ui/icon';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -6,18 +7,29 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
 const Header = () => {
+  const navigate = useNavigate();
   const [loginOpen, setLoginOpen] = useState(false);
   const [registerOpen, setRegisterOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const userData = localStorage.getItem('clientUser');
+    setIsLoggedIn(!!userData);
+  }, []);
+
+  const handleCabinetClick = () => {
+    navigate('/cabinet');
+  };
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Функция входа будет реализована');
+    navigate('/cabinet');
     setLoginOpen(false);
   };
 
   const handleRegister = (e: React.FormEvent) => {
     e.preventDefault();
-    alert('Функция регистрации будет реализована');
+    navigate('/cabinet');
     setRegisterOpen(false);
   };
 
@@ -42,13 +54,19 @@ const Header = () => {
             <a href="#contacts" className="text-sm text-gray-600 hover:text-blue-600 transition-colors font-medium">Контакты</a>
           </nav>
           <div className="flex items-center gap-3">
-            <Dialog open={loginOpen} onOpenChange={setLoginOpen}>
-              <DialogTrigger asChild>
-                <Button variant="outline" className="hidden md:flex border-gray-300 text-gray-700 hover:bg-gray-50">
-                  <Icon name="User" className="mr-2" size={18} />
-                  Войти
-                </Button>
-              </DialogTrigger>
+            {isLoggedIn ? (
+              <Button onClick={handleCabinetClick} variant="outline" className="hidden md:flex border-blue-300 text-blue-700 hover:bg-blue-50">
+                <Icon name="User" className="mr-2" size={18} />
+                Кабинет
+              </Button>
+            ) : (
+              <Dialog open={loginOpen} onOpenChange={setLoginOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="hidden md:flex border-gray-300 text-gray-700 hover:bg-gray-50">
+                    <Icon name="User" className="mr-2" size={18} />
+                    Войти
+                  </Button>
+                </DialogTrigger>
               <DialogContent className="sm:max-w-md">
                 <DialogHeader>
                   <DialogTitle className="text-2xl">Вход в личный кабинет</DialogTitle>
@@ -84,7 +102,8 @@ const Header = () => {
                   </div>
                 </form>
               </DialogContent>
-            </Dialog>
+              </Dialog>
+            )}
 
             <Dialog open={registerOpen} onOpenChange={setRegisterOpen}>
               <DialogTrigger asChild>
