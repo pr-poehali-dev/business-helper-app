@@ -7,6 +7,7 @@ import Icon from '@/components/ui/icon';
 import AdminLoginForm from '@/components/admin/AdminLoginForm';
 import ServiceFormDialog from '@/components/admin/ServiceFormDialog';
 import ServiceCard from '@/components/admin/ServiceCard';
+import OrdersTable from '@/components/admin/OrdersTable';
 
 interface Service {
   id: number;
@@ -22,6 +23,7 @@ const API_URL = 'https://functions.poehali.dev/8ac2f869-dcd9-4b3c-93cd-a81c3c14c
 
 const AdminPanel = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [activeTab, setActiveTab] = useState<'services' | 'orders'>('services');
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
@@ -193,7 +195,7 @@ const AdminPanel = () => {
           <div className="flex justify-between items-center mb-8">
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">Панель администратора</h1>
-              <p className="text-gray-600">Управление услугами платформы</p>
+              <p className="text-gray-600">Управление услугами и заявками</p>
             </div>
             
             <div className="flex gap-3">
@@ -225,12 +227,39 @@ const AdminPanel = () => {
             </div>
           </div>
 
-          {loading ? (
+          <div className="mb-6 border-b border-gray-200">
+            <nav className="flex gap-8">
+              <button
+                onClick={() => setActiveTab('services')}
+                className={`pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                  activeTab === 'services'
+                    ? 'border-blue-600 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <Icon name="Package" className="inline mr-2" size={18} />
+                Услуги ({services.length})
+              </button>
+              <button
+                onClick={() => setActiveTab('orders')}
+                className={`pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                  activeTab === 'orders'
+                    ? 'border-blue-600 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <Icon name="ClipboardList" className="inline mr-2" size={18} />
+                Заявки
+              </button>
+            </nav>
+          </div>
+
+          {activeTab === 'services' && loading ? (
             <div className="text-center py-16">
               <Icon name="Loader2" className="mx-auto text-blue-600 animate-spin mb-4" size={48} />
               <p className="text-gray-600">Загрузка услуг...</p>
             </div>
-          ) : (
+          ) : activeTab === 'services' ? (
             <>
               <Dialog open={editingService !== null} onOpenChange={(open) => !open && setEditingService(null)}>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -262,6 +291,8 @@ const AdminPanel = () => {
                 </div>
               )}
             </>
+          ) : (
+            <OrdersTable />
           )}
         </div>
       </main>
