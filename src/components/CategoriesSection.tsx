@@ -31,9 +31,10 @@ interface CategoriesSectionProps {
   products: Product[];
   selectedCategory: string;
   onCategoryChange: (category: string) => void;
+  onProductConnect: (product: Product) => void;
 }
 
-const CategoriesSection = ({ categories, products, selectedCategory, onCategoryChange }: CategoriesSectionProps) => {
+const CategoriesSection = ({ categories, products, selectedCategory, onCategoryChange, onProductConnect }: CategoriesSectionProps) => {
   return (
     <section id="categories" className="py-16 px-4 bg-white">
       <div className="container mx-auto">
@@ -129,7 +130,10 @@ const CategoriesSection = ({ categories, products, selectedCategory, onCategoryC
                   ))}
                 </ul>
 
-                <Button className="w-full bg-blue-600 text-white hover:bg-blue-700">
+                <Button 
+                  className="w-full bg-blue-600 text-white hover:bg-blue-700"
+                  onClick={() => onProductConnect(product)}
+                >
                   <Icon name="ShoppingCart" className="mr-2" size={18} />
                   Подключить
                 </Button>

@@ -362,6 +362,47 @@ const Index = () => {
     ? partnerOffers
     : partnerOffers.filter(p => p.category === selectedCategory);
 
+  const handleProductConnect = async (product: PartnerOffer) => {
+    const userId = localStorage.getItem('userId');
+    
+    if (!userId) {
+      alert('Для подключения услуги необходимо авторизоваться');
+      return;
+    }
+
+    try {
+      const response = await fetch('https://functions.poehali.dev/8a91a6fa-90ea-471e-a0dc-d5e8c6ba9ce0', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: parseInt(userId),
+          serviceType: 'partner_offer',
+          serviceName: product.title,
+          partnerName: product.partner,
+          price: product.price,
+          status: 'pending'
+        })
+      });
+
+      if (!response.ok) throw new Error('Ошибка отправки заявки');
+
+      alert(`Заявка на подключение "${product.title}" отправлена! Наш менеджер свяжется с вами в ближайшее время.`);
+      
+      await fetch('https://functions.poehali.dev/5a3ca6c8-d1de-42fd-8c4c-b1ad63ce1a37', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: parseInt(userId),
+          actionType: 'partner_offer_connect',
+          details: `Подключение: ${product.title} от ${product.partner}`
+        })
+      });
+    } catch (error) {
+      console.error('Ошибка при подключении:', error);
+      alert('Произошла ошибка. Попробуйте позже.');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -373,6 +414,7 @@ const Index = () => {
         products={filteredProducts}
         selectedCategory={selectedCategory}
         onCategoryChange={setSelectedCategory}
+        onProductConnect={handleProductConnect}
       />
       <PartnersNewsSection partners={partners} news={news} />
       <CabinetFaqContactsSection faq={faq} />
