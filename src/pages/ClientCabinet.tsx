@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import Icon from '@/components/ui/icon';
+import { ChatGPTPlaygroundPage } from '@/components/extensions/chatgpt-polza/ChatGPTPlaygroundPage';
 
 interface User {
   id: number;
@@ -32,6 +33,7 @@ interface Order {
 const USERS_API_URL = 'https://functions.poehali.dev/df46525d-1ee2-4702-a96b-e11ccf536b4c';
 const ORDERS_API_URL = 'https://functions.poehali.dev/db6d5c9a-9db1-4c85-b0c9-e45c46cc49e9';
 const ANALYTICS_API_URL = 'https://functions.poehali.dev/c0c4c918-900a-4c3e-b840-213d3cb7b459';
+const CHATGPT_API_URL = 'https://functions.poehali.dev/e1b7d9b7-1ca8-4ea7-b200-73f4f840c1d6';
 
 const ClientCabinet = () => {
   const navigate = useNavigate();
@@ -39,6 +41,7 @@ const ClientCabinet = () => {
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<'orders' | 'chatgpt'>('orders');
   
   const [loginData, setLoginData] = useState({ email: '', password: '' });
   const [registerData, setRegisterData] = useState({
@@ -355,50 +358,95 @@ const ClientCabinet = () => {
             )}
           </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Icon name="ClipboardList" size={24} />
+          <div className="mb-6 border-b border-gray-200">
+            <nav className="flex gap-8">
+              <button
+                onClick={() => setActiveTab('orders')}
+                className={`pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                  activeTab === 'orders'
+                    ? 'border-blue-600 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <Icon name="ClipboardList" className="inline mr-2" size={18} />
                 Мои заявки ({orders.length})
-              </CardTitle>
-              <CardDescription>История всех отправленных заявок</CardDescription>
-            </CardHeader>
-            <CardContent>
-              {orders.length > 0 ? (
-                <div className="space-y-4">
-                  {orders.map((order) => (
-                    <div key={order.id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
-                      <div className="flex justify-between items-start mb-3">
-                        <div>
-                          <h3 className="font-semibold text-lg">{order.service_name}</h3>
-                          <p className="text-sm text-gray-500">{formatDate(order.created_at)}</p>
+              </button>
+              <button
+                onClick={() => setActiveTab('chatgpt')}
+                className={`pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                  activeTab === 'chatgpt'
+                    ? 'border-blue-600 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <Icon name="MessageSquare" className="inline mr-2" size={18} />
+                AI-ассистент
+              </button>
+            </nav>
+          </div>
+
+          {activeTab === 'orders' ? (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Icon name="ClipboardList" size={24} />
+                  Мои заявки ({orders.length})
+                </CardTitle>
+                <CardDescription>История всех отправленных заявок</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {orders.length > 0 ? (
+                  <div className="space-y-4">
+                    {orders.map((order) => (
+                      <div key={order.id} className="border rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                        <div className="flex justify-between items-start mb-3">
+                          <div>
+                            <h3 className="font-semibold text-lg">{order.service_name}</h3>
+                            <p className="text-sm text-gray-500">{formatDate(order.created_at)}</p>
+                          </div>
+                          {getStatusBadge(order.status)}
                         </div>
-                        {getStatusBadge(order.status)}
-                      </div>
-                      {order.message && (
-                        <div className="bg-gray-50 rounded p-3 mb-2">
-                          <p className="text-sm text-gray-700">{order.message}</p>
+                        {order.message && (
+                          <div className="bg-gray-50 rounded p-3 mb-2">
+                            <p className="text-sm text-gray-700">{order.message}</p>
+                          </div>
+                        )}
+                        <div className="grid grid-cols-2 gap-2 text-sm text-gray-600">
+                          <div>Телефон: {order.client_phone}</div>
+                          {order.company_name && <div>Компания: {order.company_name}</div>}
                         </div>
-                      )}
-                      <div className="grid grid-cols-2 gap-2 text-sm text-gray-600">
-                        <div>Телефон: {order.client_phone}</div>
-                        {order.company_name && <div>Компания: {order.company_name}</div>}
                       </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-12">
-                  <Icon name="Inbox" className="mx-auto text-gray-400 mb-4" size={64} />
-                  <h3 className="text-xl font-semibold text-gray-700 mb-2">Нет заявок</h3>
-                  <p className="text-gray-500 mb-4">Вы ещё не отправляли заявки</p>
-                  <Button onClick={() => navigate('/')} className="bg-blue-600 hover:bg-blue-700">
-                    Посмотреть услуги
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <Icon name="Inbox" className="mx-auto text-gray-400 mb-4" size={64} />
+                    <h3 className="text-xl font-semibold text-gray-700 mb-2">Нет заявок</h3>
+                    <p className="text-gray-500 mb-4">Вы ещё не отправляли заявки</p>
+                    <Button onClick={() => navigate('/')} className="bg-blue-600 hover:bg-blue-700">
+                      Посмотреть услуги
+                    </Button>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          ) : (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Icon name="MessageSquare" size={24} />
+                  AI-ассистент
+                </CardTitle>
+                <CardDescription>Задавайте вопросы о услугах и получайте помощь от AI</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ChatGPTPlaygroundPage
+                  apiUrl={CHATGPT_API_URL}
+                  defaultModel="openai/gpt-4o-mini"
+                />
+              </CardContent>
+            </Card>
+          )}
         </div>
       </main>
       <Footer />
