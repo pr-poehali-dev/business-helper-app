@@ -8,6 +8,7 @@ import ServicesManagement from '@/components/admin/ServicesManagement';
 import PartnersManagement from '@/components/admin/PartnersManagement';
 import OrdersTable from '@/components/admin/OrdersTable';
 import ClientsManagement from '@/components/admin/ClientsManagement';
+import { ChatGPTPlaygroundPage } from '@/components/extensions/chatgpt-polza/ChatGPTPlaygroundPage';
 
 interface Service {
   id: number;
@@ -35,10 +36,11 @@ interface PartnerOffer {
 
 const API_URL = 'https://functions.poehali.dev/8ac2f869-dcd9-4b3c-93cd-a81c3c14c86e';
 const PARTNER_OFFERS_API_URL = 'https://functions.poehali.dev/9b132aca-4d30-44b8-a681-725b7d71264d';
+const CHATGPT_API_URL = 'https://functions.poehali.dev/e1b7d9b7-1ca8-4ea7-b200-73f4f840c1d6';
 
 const AdminPanel = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [activeTab, setActiveTab] = useState<'services' | 'orders' | 'partners' | 'clients'>('services');
+  const [activeTab, setActiveTab] = useState<'services' | 'orders' | 'partners' | 'clients' | 'chatgpt'>('services');
   const [services, setServices] = useState<Service[]>([]);
   const [partnerOffers, setPartnerOffers] = useState<PartnerOffer[]>([]);
   const [loading, setLoading] = useState(true);
@@ -175,6 +177,17 @@ const AdminPanel = () => {
                 <Icon name="Users" className="inline mr-2" size={18} />
                 Клиенты
               </button>
+              <button
+                onClick={() => setActiveTab('chatgpt')}
+                className={`pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                  activeTab === 'chatgpt'
+                    ? 'border-blue-600 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <Icon name="MessageSquare" className="inline mr-2" size={18} />
+                ChatGPT
+              </button>
             </nav>
           </div>
 
@@ -195,6 +208,13 @@ const AdminPanel = () => {
             />
           ) : activeTab === 'clients' ? (
             <ClientsManagement />
+          ) : activeTab === 'chatgpt' ? (
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <ChatGPTPlaygroundPage
+                apiUrl={CHATGPT_API_URL}
+                defaultModel="openai/gpt-4o-mini"
+              />
+            </div>
           ) : (
             <OrdersTable />
           )}
