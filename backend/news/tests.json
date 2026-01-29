@@ -1,0 +1,30 @@
+{
+  "tests": [
+    {
+      "name": "Get all news articles",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": [],
+      "bodyMatcher": "type"
+    },
+    {
+      "name": "Create news article",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "action": "create",
+        "title": "Тестовая новость",
+        "description": "Описание тестовой новости",
+        "content": "Полный текст тестовой новости для проверки функционала",
+        "badge": "Новости",
+        "is_published": false
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

@@ -8,6 +8,7 @@ import ServicesManagement from '@/components/admin/ServicesManagement';
 import PartnersManagement from '@/components/admin/PartnersManagement';
 import OrdersTable from '@/components/admin/OrdersTable';
 import ClientsManagement from '@/components/admin/ClientsManagement';
+import NewsManagement from '@/components/admin/NewsManagement';
 import { ChatGPTPlaygroundPage } from '@/components/extensions/chatgpt-polza/ChatGPTPlaygroundPage';
 
 interface Service {
@@ -34,15 +35,27 @@ interface PartnerOffer {
   reviews: number;
 }
 
+interface NewsArticle {
+  id: number;
+  title: string;
+  description: string;
+  badge: string;
+  image_url?: string;
+  published_date?: string;
+  is_published: boolean;
+}
+
 const API_URL = 'https://functions.poehali.dev/8ac2f869-dcd9-4b3c-93cd-a81c3c14c86e';
 const PARTNER_OFFERS_API_URL = 'https://functions.poehali.dev/9b132aca-4d30-44b8-a681-725b7d71264d';
 const CHATGPT_API_URL = 'https://functions.poehali.dev/e1b7d9b7-1ca8-4ea7-b200-73f4f840c1d6';
+const NEWS_API_URL = 'https://functions.poehali.dev/33fdf451-a1d5-4a5f-9e74-b9870f38067b';
 
 const AdminPanel = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [activeTab, setActiveTab] = useState<'services' | 'orders' | 'partners' | 'clients' | 'chatgpt'>('services');
+  const [activeTab, setActiveTab] = useState<'services' | 'orders' | 'partners' | 'clients' | 'chatgpt' | 'news'>('services');
   const [services, setServices] = useState<Service[]>([]);
   const [partnerOffers, setPartnerOffers] = useState<PartnerOffer[]>([]);
+  const [newsArticles, setNewsArticles] = useState<NewsArticle[]>([]);
   const [loading, setLoading] = useState(true);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [addPartnerDialogOpen, setAddPartnerDialogOpen] = useState(false);
@@ -53,6 +66,7 @@ const AdminPanel = () => {
       setIsAuthenticated(true);
       loadServices();
       loadPartnerOffers();
+      loadNews();
     } else {
       setLoading(false);
     }
@@ -62,6 +76,7 @@ const AdminPanel = () => {
     setIsAuthenticated(true);
     loadServices();
     loadPartnerOffers();
+    loadNews();
   };
 
   const handleLogout = () => {
@@ -93,6 +108,17 @@ const AdminPanel = () => {
       setPartnerOffers(data);
     } catch (error) {
       console.error('Ошибка при загрузке предложений:', error);
+    }
+  };
+
+  const loadNews = async () => {
+    try {
+      const response = await fetch(NEWS_API_URL);
+      if (!response.ok) throw new Error('Ошибка загрузки новостей');
+      const data = await response.json();
+      setNewsArticles(data);
+    } catch (error) {
+      console.error('Ошибка при загрузке новостей:', error);
     }
   };
 
@@ -178,6 +204,17 @@ const AdminPanel = () => {
                 Клиенты
               </button>
               <button
+                onClick={() => setActiveTab('news')}
+                className={`pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                  activeTab === 'news'
+                    ? 'border-blue-600 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <Icon name="Newspaper" className="inline mr-2" size={18} />
+                Новости ({newsArticles.length})
+              </button>
+              <button
                 onClick={() => setActiveTab('chatgpt')}
                 className={`pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                   activeTab === 'chatgpt'
@@ -208,6 +245,11 @@ const AdminPanel = () => {
             />
           ) : activeTab === 'clients' ? (
             <ClientsManagement />
+          ) : activeTab === 'news' ? (
+            <NewsManagement
+              articles={newsArticles}
+              onReload={loadNews}
+            />
           ) : activeTab === 'chatgpt' ? (
             <div className="bg-white rounded-lg shadow-sm p-6">
               <ChatGPTPlaygroundPage
