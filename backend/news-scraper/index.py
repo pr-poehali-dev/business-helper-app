@@ -8,7 +8,6 @@ import requests
 from bs4 import BeautifulSoup
 import psycopg2
 from psycopg2.extras import RealDictCursor
-from psycopg2.extensions import AsIs
 
 
 def handler(event: dict, context) -> dict:
@@ -124,13 +123,14 @@ def save_to_database(products):
     
     for product in products:
         # Проверяем, есть ли уже такая новость
-        cursor.execute("SELECT id FROM %s.news_articles WHERE title = %s", (AsIs(schema), product['title']))
+        table_name = f"{schema}.news_articles"
+        cursor.execute(f"SELECT id FROM {table_name} WHERE title = %s", (product['title'],))
         existing = cursor.fetchone()
         
         if not existing:
             # Создаем новую новость
-            cursor.execute("INSERT INTO %s.news_articles (title, content, source_url, image_url, status, created_at, updated_at) VALUES (%s, %s, %s, %s, %s, %s, %s)", (
-                AsIs(schema),
+            table_name = f"{schema}.news_articles"
+            cursor.execute(f"INSERT INTO {table_name} (title, content, source_url, image_url, status, created_at, updated_at) VALUES (%s, %s, %s, %s, %s, %s, %s)", (
                 product['title'],
                 product['description'],
                 product['link'],
