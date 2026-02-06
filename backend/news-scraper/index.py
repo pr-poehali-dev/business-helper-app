@@ -124,13 +124,19 @@ def save_to_database(products):
     
     for product in products:
         # Проверяем, есть ли уже такая новость
-        query = sql.SQL("SELECT id FROM {}.news_articles WHERE title = %s").format(sql.Identifier(schema))
+        query = sql.SQL("SELECT id FROM {schema}.{table} WHERE title = %s").format(
+            schema=sql.Identifier(schema),
+            table=sql.Identifier('news_articles')
+        )
         cursor.execute(query, (product['title'],))
         existing = cursor.fetchone()
         
         if not existing:
             # Создаем новую новость
-            query = sql.SQL("INSERT INTO {}.news_articles (title, content, source_url, image_url, status, created_at, updated_at) VALUES (%s, %s, %s, %s, %s, %s, %s)").format(sql.Identifier(schema))
+            query = sql.SQL("INSERT INTO {schema}.{table} (title, content, source_url, image_url, status, created_at, updated_at) VALUES (%s, %s, %s, %s, %s, %s, %s)").format(
+                schema=sql.Identifier(schema),
+                table=sql.Identifier('news_articles')
+            )
             cursor.execute(query, (
                 product['title'],
                 product['description'],
