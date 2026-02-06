@@ -123,19 +123,18 @@ def save_to_database(products):
     
     for product in products:
         # Проверяем, есть ли уже такая новость
-        cursor.execute(
-            f"SELECT id FROM {schema}.news_articles WHERE title = %s",
-            (product['title'],)
-        )
+        check_query = f"SELECT id FROM {schema}.news_articles WHERE title = %s"
+        cursor.execute(check_query, (product['title'],))
         existing = cursor.fetchone()
         
         if not existing:
             # Создаем новую новость
-            cursor.execute(f"""
+            insert_query = f"""
                 INSERT INTO {schema}.news_articles 
                 (title, content, source_url, image_url, status, created_at, updated_at)
                 VALUES (%s, %s, %s, %s, %s, %s, %s)
-            """, (
+            """
+            cursor.execute(insert_query, (
                 product['title'],
                 product['description'],
                 product['link'],
