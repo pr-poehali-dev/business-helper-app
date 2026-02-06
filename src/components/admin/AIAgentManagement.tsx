@@ -3,6 +3,7 @@ import Icon from '@/components/ui/icon';
 
 const AI_AGENT_URL = 'https://functions.poehali.dev/c42f2362-0697-4b7f-acd6-202c45772cba';
 const NEWS_SCRAPER_URL = 'https://functions.poehali.dev/80bcda15-af32-4342-a690-bc57930219a7';
+const SCHEDULER_URL = 'https://functions.poehali.dev/38107b77-1b0c-4bb7-b18b-f5164553c08b';
 
 interface AgentStats {
   drafts: number;
@@ -254,6 +255,48 @@ export default function AIAgentManagement() {
           <li>• <strong>Шаг 3:</strong> Публикует готовые новости в канал @kupetzvplyuse</li>
           <li>• <strong>Автоцикл:</strong> Выполняет все 3 шага автоматически одной кнопкой</li>
         </ul>
+      </div>
+
+      <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-6">
+        <h3 className="font-semibold text-purple-900 mb-3 flex items-center gap-2">
+          <Icon name="Clock" size={20} />
+          Автоматический запуск по расписанию
+        </h3>
+        <p className="text-sm text-purple-800 mb-4">
+          Для автоматического запуска агента каждый день используйте сервис <strong>cron-job.org</strong> или любой другой планировщик задач.
+        </p>
+        <div className="bg-white rounded-lg p-4 mb-4">
+          <div className="text-xs text-gray-500 mb-2">Webhook URL для автозапуска:</div>
+          <div className="flex gap-2">
+            <input
+              type="text"
+              value={SCHEDULER_URL}
+              readOnly
+              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm font-mono bg-gray-50"
+            />
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(SCHEDULER_URL);
+                addLog('📋 URL скопирован в буфер обмена');
+              }}
+              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm transition-colors"
+            >
+              <Icon name="Copy" size={16} className="inline mr-1" />
+              Копировать
+            </button>
+          </div>
+        </div>
+        <div className="text-xs text-purple-700 space-y-1">
+          <p><strong>Настройка расписания:</strong></p>
+          <ol className="list-decimal ml-4 space-y-1">
+            <li>Зайдите на <a href="https://cron-job.org" target="_blank" rel="noopener noreferrer" className="underline">cron-job.org</a> и зарегистрируйтесь</li>
+            <li>Создайте новую задачу (Create cronjob)</li>
+            <li>Вставьте URL выше в поле URL</li>
+            <li>Выберите метод: <strong>POST</strong></li>
+            <li>Настройте расписание (например, каждый день в 10:00)</li>
+            <li>Сохраните задачу — агент будет запускаться автоматически!</li>
+          </ol>
+        </div>
       </div>
     </div>
   );

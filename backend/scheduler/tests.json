@@ -1,0 +1,10 @@
+{
+  "tests": [
+    {
+      "name": "Get scheduler status",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200
+    }
+  ]
+}
