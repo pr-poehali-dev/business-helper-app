@@ -7,6 +7,7 @@ from datetime import datetime
 import requests
 from bs4 import BeautifulSoup
 import psycopg2
+from psycopg2 import sql
 from psycopg2.extras import RealDictCursor
 
 
@@ -123,14 +124,14 @@ def save_to_database(products):
     
     for product in products:
         # Проверяем, есть ли уже такая новость
-        table_name = f"{schema}.news_articles"
-        cursor.execute(f"SELECT id FROM {table_name} WHERE title = %s", (product['title'],))
+        query = sql.SQL("SELECT id FROM {}.news_articles WHERE title = %s").format(sql.Identifier(schema))
+        cursor.execute(query, (product['title'],))
         existing = cursor.fetchone()
         
         if not existing:
             # Создаем новую новость
-            table_name = f"{schema}.news_articles"
-            cursor.execute(f"INSERT INTO {table_name} (title, content, source_url, image_url, status, created_at, updated_at) VALUES (%s, %s, %s, %s, %s, %s, %s)", (
+            query = sql.SQL("INSERT INTO {}.news_articles (title, content, source_url, image_url, status, created_at, updated_at) VALUES (%s, %s, %s, %s, %s, %s, %s)").format(sql.Identifier(schema))
+            cursor.execute(query, (
                 product['title'],
                 product['description'],
                 product['link'],
