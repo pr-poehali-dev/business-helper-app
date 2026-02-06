@@ -129,11 +129,7 @@ def save_to_database(products):
         
         if not existing:
             # Создаем новую новость
-            insert_query = f"""
-                INSERT INTO {schema}.news_articles 
-                (title, content, source_url, image_url, status, created_at, updated_at)
-                VALUES (%s, %s, %s, %s, %s, %s, %s)
-            """
+            insert_query = f"INSERT INTO {schema}.news_articles (title, content, source_url, image_url, status, created_at, updated_at) VALUES (%s, %s, %s, %s, %s, %s, %s)"
             cursor.execute(insert_query, (
                 product['title'],
                 product['description'],

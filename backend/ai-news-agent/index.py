@@ -88,13 +88,7 @@ def process_draft_news():
     cursor = conn.cursor(cursor_factory=RealDictCursor)
     
     # Получаем черновики
-    query = f"""
-        SELECT id, title, content, source_url, image_url
-        FROM {schema}.news_articles
-        WHERE status = 'draft'
-        ORDER BY created_at DESC
-        LIMIT 5
-    """
+    query = f"SELECT id, title, content, source_url, image_url FROM {schema}.news_articles WHERE status = 'draft' ORDER BY created_at DESC LIMIT 5"
     cursor.execute(query)
     
     drafts = cursor.fetchall()
@@ -111,13 +105,7 @@ def process_draft_news():
         
         if improved:
             # Обновляем статью
-            update_query = f"""
-                UPDATE {schema}.news_articles
-                SET content = %s,
-                    status = 'ready',
-                    updated_at = %s
-                WHERE id = %s
-            """
+            update_query = f"UPDATE {schema}.news_articles SET content = %s, status = 'ready', updated_at = %s WHERE id = %s"
             cursor.execute(update_query, (improved, datetime.now(), draft['id']))
             processed += 1
     
@@ -183,13 +171,7 @@ def publish_news():
     cursor = conn.cursor(cursor_factory=RealDictCursor)
     
     # Получаем готовые к публикации новости
-    select_query = f"""
-        SELECT id, title, content, source_url, image_url
-        FROM {schema}.news_articles
-        WHERE status = 'ready'
-        ORDER BY created_at DESC
-        LIMIT 3
-    """
+    select_query = f"SELECT id, title, content, source_url, image_url FROM {schema}.news_articles WHERE status = 'ready' ORDER BY created_at DESC LIMIT 3"
     cursor.execute(select_query)
     
     ready_news = cursor.fetchall()
@@ -208,13 +190,7 @@ def publish_news():
         
         if success:
             # Обновляем статус
-            update_query = f"""
-                UPDATE {schema}.news_articles
-                SET status = 'published',
-                    published_at = %s,
-                    updated_at = %s
-                WHERE id = %s
-            """
+            update_query = f"UPDATE {schema}.news_articles SET status = 'published', published_at = %s, updated_at = %s WHERE id = %s"
             cursor.execute(update_query, (datetime.now(), datetime.now(), news['id']))
             published += 1
     
@@ -310,13 +286,7 @@ def get_agent_stats():
     conn = psycopg2.connect(database_url)
     cursor = conn.cursor(cursor_factory=RealDictCursor)
     
-    query = f"""
-        SELECT 
-            status,
-            COUNT(*) as count
-        FROM {schema}.news_articles
-        GROUP BY status
-    """
+    query = f"SELECT status, COUNT(*) as count FROM {schema}.news_articles GROUP BY status"
     cursor.execute(query)
     
     stats = {row['status']: row['count'] for row in cursor.fetchall()}
