@@ -9,6 +9,7 @@ import PartnersManagement from '@/components/admin/PartnersManagement';
 import OrdersTable from '@/components/admin/OrdersTable';
 import ClientsManagement from '@/components/admin/ClientsManagement';
 import NewsManagement from '@/components/admin/NewsManagement';
+import AIAgentManagement from '@/components/admin/AIAgentManagement';
 import { ChatGPTPlaygroundPage } from '@/components/extensions/chatgpt-polza/ChatGPTPlaygroundPage';
 
 interface Service {
@@ -215,6 +216,17 @@ const AdminPanel = () => {
                 Новости ({newsArticles.length})
               </button>
               <button
+                onClick={() => setActiveTab('ai-agent')}
+                className={`pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+                  activeTab === 'ai-agent'
+                    ? 'border-blue-600 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                <Icon name="Bot" className="inline mr-2" size={18} />
+                ИИ-Агент
+              </button>
+              <button
                 onClick={() => setActiveTab('chatgpt')}
                 className={`pb-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                   activeTab === 'chatgpt'
@@ -250,6 +262,8 @@ const AdminPanel = () => {
               articles={newsArticles}
               onReload={loadNews}
             />
+          ) : activeTab === 'ai-agent' ? (
+            <AIAgentManagement />
           ) : activeTab === 'chatgpt' ? (
             <div className="bg-white rounded-lg shadow-sm p-6">
               <ChatGPTPlaygroundPage

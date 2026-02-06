@@ -1,0 +1,10 @@
+{
+  "tests": [
+    {
+      "name": "Test scraper endpoint",
+      "method": "POST",
+      "path": "/",
+      "expectedStatus": 200
+    }
+  ]
+}
