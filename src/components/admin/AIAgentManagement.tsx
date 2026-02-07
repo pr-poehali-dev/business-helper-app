@@ -4,7 +4,6 @@ import Icon from '@/components/ui/icon';
 const AI_AGENT_URL = 'https://functions.poehali.dev/c42f2362-0697-4b7f-acd6-202c45772cba';
 const NEWS_SCRAPER_URL = 'https://functions.poehali.dev/80bcda15-af32-4342-a690-bc57930219a7';
 const SCHEDULER_URL = 'https://functions.poehali.dev/38107b77-1b0c-4bb7-b18b-f5164553c08b';
-const DB_MIGRATE_URL = 'https://functions.poehali.dev/db-migrate'; // Будет обновлён после деплоя
 
 interface AgentStats {
   drafts: number;
@@ -159,9 +158,10 @@ export default function AIAgentManagement() {
     addLog('🔧 Применение миграции базы данных...');
     
     try {
-      const response = await fetch(DB_MIGRATE_URL, {
+      const response = await fetch(AI_AGENT_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'migrate' })
       });
       const result = await response.json();
       

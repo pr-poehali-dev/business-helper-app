@@ -41,6 +41,9 @@ def handler(event: dict, context) -> dict:
         elif action == 'auto':
             # Полный цикл: парсинг → обработка → публикация
             result = auto_pipeline()
+        elif action == 'migrate':
+            # Применение миграции БД
+            result = apply_migration()
         else:
             result = {'error': 'Unknown action'}
         
@@ -300,3 +303,69 @@ def get_agent_stats():
         'published': stats.get('published', 0),
         'total': sum(stats.values())
     }
+
+
+def apply_migration():
+    """Применение миграции для создания таблицы news_articles"""
+    database_url = os.environ.get('DATABASE_URL')
+    schema = os.environ.get('MAIN_DB_SCHEMA', 'public')
+    
+    if not database_url:
+        return {'success': False, 'error': 'DATABASE_URL not configured'}
+    
+    migration_sql = f"""
+    CREATE TABLE IF NOT EXISTS {schema}.news_articles (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(500) NOT NULL,
+        content TEXT NOT NULL,
+        source_url TEXT,
+        image_url TEXT,
+        status VARCHAR(20) DEFAULT 'draft',
+        published_at TIMESTAMP,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_news_status ON {schema}.news_articles(status, created_at DESC);
+    """
+    
+    try:
+        conn = psycopg2.connect(database_url)
+        cursor = conn.cursor()
+        
+        # Выполняем миграцию
+        cursor.execute(migration_sql)
+        conn.commit()
+        
+        # Проверяем, что таблица создалась
+        cursor.execute(f"""
+            SELECT COUNT(*) 
+            FROM information_schema.tables 
+            WHERE table_schema = %s 
+            AND table_name = 'news_articles'
+        """, (schema,))
+        
+        table_exists = cursor.fetchone()[0] > 0
+        
+        cursor.close()
+        conn.close()
+        
+        if table_exists:
+            return {
+                'success': True,
+                'message': f'Таблица news_articles успешно создана в схеме {schema}',
+                'schema': schema
+            }
+        else:
+            return {
+                'success': False,
+                'error': 'Таблица не была создана',
+                'schema': schema
+            }
+            
+    except Exception as e:
+        return {
+            'success': False,
+            'error': f'Ошибка миграции: {str(e)}',
+            'schema': schema
+        }
