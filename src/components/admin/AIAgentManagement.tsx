@@ -4,6 +4,7 @@ import Icon from '@/components/ui/icon';
 const AI_AGENT_URL = 'https://functions.poehali.dev/c42f2362-0697-4b7f-acd6-202c45772cba';
 const NEWS_SCRAPER_URL = 'https://functions.poehali.dev/80bcda15-af32-4342-a690-bc57930219a7';
 const SCHEDULER_URL = 'https://functions.poehali.dev/38107b77-1b0c-4bb7-b18b-f5164553c08b';
+const DB_MIGRATE_URL = 'https://functions.poehali.dev/db-migrate'; // Будет обновлён после деплоя
 
 interface AgentStats {
   drafts: number;
@@ -153,6 +154,31 @@ export default function AIAgentManagement() {
     }
   };
 
+  const runMigration = async () => {
+    setLoading(true);
+    addLog('🔧 Применение миграции базы данных...');
+    
+    try {
+      const response = await fetch(DB_MIGRATE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const result = await response.json();
+      
+      if (result.success) {
+        addLog(`✅ ${result.message}`);
+        addLog(`📊 Схема: ${result.schema}`);
+        await loadStats();
+      } else {
+        addLog(`❌ Ошибка миграции: ${result.error}`);
+      }
+    } catch (error) {
+      addLog(`❌ Ошибка: ${error}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-lg shadow-sm p-6">
@@ -226,6 +252,26 @@ export default function AIAgentManagement() {
             <Icon name="Zap" size={20} className="inline mr-2" />
             ⚡ Запустить полный цикл (1+2+3)
           </button>
+        </div>
+      </div>
+
+      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+        <div className="flex items-start gap-3">
+          <Icon name="AlertTriangle" size={20} className="text-yellow-600 mt-0.5" />
+          <div className="flex-1">
+            <h3 className="font-semibold text-yellow-900 mb-2">Требуется настройка базы данных</h3>
+            <p className="text-sm text-yellow-800 mb-3">
+              Если вы видите ошибку "object not found" или "InsufficientPrivilege", нужно применить миграцию для создания таблицы news_articles.
+            </p>
+            <button
+              onClick={runMigration}
+              disabled={loading}
+              className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-colors disabled:opacity-50 font-medium"
+            >
+              <Icon name="Database" size={16} className="inline mr-2" />
+              🔧 Применить миграцию БД
+            </button>
+          </div>
         </div>
       </div>
 
