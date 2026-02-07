@@ -263,14 +263,28 @@ export default function AIAgentManagement() {
             <p className="text-sm text-yellow-800 mb-3">
               Если вы видите ошибку "object not found" или "InsufficientPrivilege", нужно применить миграцию для создания таблицы news_articles.
             </p>
-            <button
-              onClick={runMigration}
-              disabled={loading}
-              className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-colors disabled:opacity-50 font-medium"
-            >
-              <Icon name="Database" size={16} className="inline mr-2" />
-              🔧 Применить миграцию БД
-            </button>
+            <div className="flex gap-2">
+              <button
+                onClick={runMigration}
+                disabled={loading}
+                className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-colors disabled:opacity-50 font-medium"
+              >
+                <Icon name="Database" size={16} className="inline mr-2" />
+                🔧 Применить миграцию БД
+              </button>
+              <a
+                href="https://functions.poehali.dev/db-migrate"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium inline-flex items-center"
+              >
+                <Icon name="ExternalLink" size={16} className="inline mr-2" />
+                Открыть в новой вкладке
+              </a>
+            </div>
+            <p className="text-xs text-yellow-700 mt-2">
+              💡 Если кнопка не работает, откройте ссылку в новой вкладке — увидите результат миграции
+            </p>
           </div>
         </div>
       </div>

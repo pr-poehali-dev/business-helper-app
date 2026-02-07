@@ -21,7 +21,7 @@ def handler(event: dict, context) -> dict:
             'body': ''
         }
     
-    if method == 'POST':
+    if method in ['POST', 'GET']:
         result = apply_migration()
         return {
             'statusCode': 200,
