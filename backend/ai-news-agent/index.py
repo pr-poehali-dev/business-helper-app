@@ -85,12 +85,15 @@ def process_draft_news():
     if not database_url or not api_key:
         return {'success': False, 'error': 'Missing credentials'}
     
-    conn = psycopg2.connect(database_url)
-    cursor = conn.cursor(cursor_factory=RealDictCursor)
-    
-    # Получаем черновики (прямая интерполяция схемы из env)
-    query = f"SELECT id, title, content, source_url, image_url FROM {schema}.news_articles WHERE status = 'draft' ORDER BY created_at DESC LIMIT 5"
-    cursor.execute(query)
+    try:
+        conn = psycopg2.connect(database_url)
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # Получаем черновики (прямая интерполяция схемы из env)
+        query = f"SELECT id, title, content, source_url, image_url FROM {schema}.news_articles WHERE status = 'draft' ORDER BY created_at DESC LIMIT 5"
+        cursor.execute(query)
+    except Exception as e:
+        return {'success': False, 'error': f'DB error at line 96: {str(e)}, schema={schema}'}
     
     drafts = cursor.fetchall()
     processed = 0
@@ -110,15 +113,17 @@ def process_draft_news():
             cursor.execute(query, (improved, datetime.now(), draft['id']))
             processed += 1
     
-    conn.commit()
-    cursor.close()
-    conn.close()
-    
-    return {
-        'success': True,
-        'processed': processed,
-        'total_drafts': len(drafts)
-    }
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        return {
+            'success': True,
+            'processed': processed,
+            'total_drafts': len(drafts)
+        }
+    except Exception as e:
+        return {'success': False, 'error': f'Process error: {str(e)}, schema={schema}'}
 
 
 def improve_content_with_ai(title, content, source_url, api_key):
@@ -168,12 +173,15 @@ def publish_news():
     if not all([database_url, bot_token, channel_id]):
         return {'success': False, 'error': 'Missing credentials'}
     
-    conn = psycopg2.connect(database_url)
-    cursor = conn.cursor(cursor_factory=RealDictCursor)
-    
-    # Получаем готовые к публикации новости
-    query = f"SELECT id, title, content, source_url, image_url FROM {schema}.news_articles WHERE status = 'ready' ORDER BY created_at DESC LIMIT 3"
-    cursor.execute(query)
+    try:
+        conn = psycopg2.connect(database_url)
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        
+        # Получаем готовые к публикации новости
+        query = f"SELECT id, title, content, source_url, image_url FROM {schema}.news_articles WHERE status = 'ready' ORDER BY created_at DESC LIMIT 3"
+        cursor.execute(query)
+    except Exception as e:
+        return {'success': False, 'error': f'DB error at line 185: {str(e)}, schema={schema}'}
     
     ready_news = cursor.fetchall()
     published = 0
@@ -195,15 +203,17 @@ def publish_news():
             cursor.execute(query, (datetime.now(), datetime.now(), news['id']))
             published += 1
     
-    conn.commit()
-    cursor.close()
-    conn.close()
-    
-    return {
-        'success': True,
-        'published': published,
-        'total_ready': len(ready_news)
-    }
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        return {
+            'success': True,
+            'published': published,
+            'total_ready': len(ready_news)
+        }
+    except Exception as e:
+        return {'success': False, 'error': f'Publish error: {str(e)}, schema={schema}'}
 
 
 def send_to_telegram(title, content, source_url, image_url, bot_token, channel_id):
@@ -284,20 +294,23 @@ def get_agent_stats():
     if not database_url:
         return {'error': 'Database not configured'}
     
-    conn = psycopg2.connect(database_url)
-    cursor = conn.cursor(cursor_factory=RealDictCursor)
-    
-    query = f"SELECT status, COUNT(*) as count FROM {schema}.news_articles GROUP BY status"
-    cursor.execute(query)
-    
-    stats = {row['status']: row['count'] for row in cursor.fetchall()}
-    
-    cursor.close()
-    conn.close()
-    
-    return {
-        'drafts': stats.get('draft', 0),
-        'ready': stats.get('ready', 0),
-        'published': stats.get('published', 0),
-        'total': sum(stats.values())
-    }
+    try:
+        conn = psycopg2.connect(database_url)
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
+        
+        query = f"SELECT status, COUNT(*) as count FROM {schema}.news_articles GROUP BY status"
+        cursor.execute(query)
+        
+        stats = {row['status']: row['count'] for row in cursor.fetchall()}
+        
+        cursor.close()
+        conn.close()
+        
+        return {
+            'drafts': stats.get('draft', 0),
+            'ready': stats.get('ready', 0),
+            'published': stats.get('published', 0),
+            'total': sum(stats.values())
+        }
+    except Exception as e:
+        return {'error': f'Stats error: {str(e)}, schema={schema}'}

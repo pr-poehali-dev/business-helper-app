@@ -117,33 +117,36 @@ def save_to_database(products):
     if not database_url:
         raise Exception('DATABASE_URL not found')
     
-    conn = psycopg2.connect(database_url)
-    cursor = conn.cursor(cursor_factory=RealDictCursor)
-    
-    saved_count = 0
-    
-    for product in products:
-        # Проверяем, есть ли уже такая новость
-        query = f"SELECT id FROM {schema}.news_articles WHERE title = %s"
-        cursor.execute(query, (product['title'],))
-        existing = cursor.fetchone()
+    try:
+        conn = psycopg2.connect(database_url)
+        cursor = conn.cursor(cursor_factory=RealDictCursor)
         
-        if not existing:
-            # Создаем новую новость
-            query = f"INSERT INTO {schema}.news_articles (title, content, source_url, image_url, status, created_at, updated_at) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-            cursor.execute(query, (
-                product['title'],
-                product['description'],
-                product['link'],
-                product['image_url'],
-                'draft',
-                datetime.now(),
-                datetime.now()
-            ))
-            saved_count += 1
-    
-    conn.commit()
-    cursor.close()
-    conn.close()
-    
-    return saved_count
+        saved_count = 0
+        
+        for product in products:
+            # Проверяем, есть ли уже такая новость
+            query = f"SELECT id FROM {schema}.news_articles WHERE title = %s"
+            cursor.execute(query, (product['title'],))
+            existing = cursor.fetchone()
+            
+            if not existing:
+                # Создаем новую новость
+                query = f"INSERT INTO {schema}.news_articles (title, content, source_url, image_url, status, created_at, updated_at) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+                cursor.execute(query, (
+                    product['title'],
+                    product['description'],
+                    product['link'],
+                    product['image_url'],
+                    'draft',
+                    datetime.now(),
+                    datetime.now()
+                ))
+                saved_count += 1
+        
+        conn.commit()
+        cursor.close()
+        conn.close()
+        
+        return saved_count
+    except Exception as e:
+        raise Exception(f'DB save error: {str(e)}, schema={schema}')
