@@ -75,7 +75,7 @@ export default function AIAgentManagement() {
       if (result.success) {
         addLog(`✅ Обработано ${result.processed} из ${result.total_drafts} черновиков`);
       } else {
-        addLog(`❌ Ошибка обработки: ${result.error}`);
+        addLog(`❌ Ошибка обработки: ${result.error || JSON.stringify(result)}`);
       }
       
       await loadStats();
@@ -101,7 +101,7 @@ export default function AIAgentManagement() {
       if (result.success) {
         addLog(`✅ Опубликовано ${result.published} из ${result.total_ready} новостей`);
       } else {
-        addLog(`❌ Ошибка публикации: ${result.error}`);
+        addLog(`❌ Ошибка публикации: ${result.error || JSON.stringify(result)}`);
       }
       
       await loadStats();
@@ -128,15 +128,21 @@ export default function AIAgentManagement() {
         const { pipeline } = result;
         if (pipeline.scrape?.success) {
           addLog(`✅ Парсинг: ${pipeline.scrape.scraped} новостей`);
+        } else if (pipeline.scrape?.error) {
+          addLog(`❌ Парсинг: ${pipeline.scrape.error}`);
         }
         if (pipeline.process?.success) {
           addLog(`✅ Обработка: ${pipeline.process.processed} статей`);
+        } else if (pipeline.process?.error) {
+          addLog(`❌ Обработка: ${pipeline.process.error}`);
         }
         if (pipeline.publish?.success) {
           addLog(`✅ Публикация: ${pipeline.publish.published} постов`);
+        } else if (pipeline.publish?.error) {
+          addLog(`❌ Публикация: ${pipeline.publish.error}`);
         }
       } else {
-        addLog(`❌ Ошибка автоцикла`);
+        addLog(`❌ Ошибка автоцикла: ${result.error || JSON.stringify(result)}`);
       }
       
       await loadStats();
