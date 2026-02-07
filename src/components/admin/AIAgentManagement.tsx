@@ -294,29 +294,37 @@ export default function AIAgentManagement() {
         </div>
         <div className="text-xs text-purple-700 space-y-3">
           <div>
-            <p className="font-semibold mb-1">🔹 Вариант 1: EasyCron.com (рекомендую)</p>
+            <p className="font-semibold mb-1">🇷🇺 Вариант 1: UptimeRobot (рекомендую, работает из РФ)</p>
             <ol className="list-decimal ml-4 space-y-1">
-              <li>Зайдите на <a href="https://www.easycron.com" target="_blank" rel="noopener noreferrer" className="underline font-semibold">easycron.com</a> и зарегистрируйтесь</li>
-              <li>Создайте новую задачу (Create New Cron Job)</li>
+              <li>Зайдите на <a href="https://uptimerobot.com" target="_blank" rel="noopener noreferrer" className="underline font-semibold">uptimerobot.com</a> и зарегистрируйтесь</li>
+              <li>Создайте новый монитор: Add New Monitor → HTTP(s)</li>
               <li>URL: вставьте URL выше</li>
-              <li>Cron Expression: <code className="bg-purple-100 px-1 rounded">0 10 * * *</code> (каждый день в 10:00)</li>
-              <li>Method: <strong>POST</strong></li>
-              <li>Сохраните — готово!</li>
+              <li>Monitoring Interval: каждые <strong>24 часа</strong> (или любой интервал)</li>
+              <li>Monitor Type: HTTP(s) - Keyword</li>
+              <li>Keyword: <code className="bg-purple-100 px-1 rounded">success</code></li>
+              <li>Сохраните — UptimeRobot будет автоматически дергать URL!</li>
             </ol>
           </div>
           <div>
-            <p className="font-semibold mb-1">🔹 Вариант 2: Cron-job.org</p>
+            <p className="font-semibold mb-1">🇷🇺 Вариант 2: Yandex Cloud Functions Triggers</p>
             <ol className="list-decimal ml-4 space-y-1">
-              <li>Зайдите на <a href="https://console.cron-job.org/signup" target="_blank" rel="noopener noreferrer" className="underline">console.cron-job.org/signup</a></li>
-              <li>Создайте задачу, метод POST, расписание: Daily at 10:00</li>
+              <li>Зайдите в <a href="https://console.cloud.yandex.ru" target="_blank" rel="noopener noreferrer" className="underline">Yandex Cloud Console</a></li>
+              <li>Создайте Timer trigger (таймер по расписанию)</li>
+              <li>Cron-выражение: <code className="bg-purple-100 px-1 rounded">0 10 * * ? *</code> (каждый день в 10:00 МСК)</li>
+              <li>Вызов HTTP: метод POST, URL выше</li>
             </ol>
           </div>
           <div>
-            <p className="font-semibold mb-1">🔹 Вариант 3: crontab.guru + Render.com</p>
+            <p className="font-semibold mb-1">🔹 Вариант 3: EasyCron.com (международный)</p>
             <ol className="list-decimal ml-4 space-y-1">
-              <li>Зарегистрируйтесь на <a href="https://render.com" target="_blank" rel="noopener noreferrer" className="underline">render.com</a> (бесплатно)</li>
-              <li>Создайте Cron Job, укажите URL и расписание</li>
+              <li>Зайдите на <a href="https://www.easycron.com" target="_blank" rel="noopener noreferrer" className="underline">easycron.com</a></li>
+              <li>URL: вставьте URL выше, Method: POST</li>
+              <li>Cron: <code className="bg-purple-100 px-1 rounded">0 10 * * *</code> (10:00 каждый день)</li>
             </ol>
+          </div>
+          <div className="mt-3 p-2 bg-green-50 border border-green-200 rounded">
+            <p className="font-semibold text-green-800">💡 Самый простой: UptimeRobot</p>
+            <p className="text-green-700">Работает из России, бесплатный, надёжный. Просто создаёте "монитор" который будет проверять ваш URL каждые 24 часа.</p>
           </div>
         </div>
       </div>
