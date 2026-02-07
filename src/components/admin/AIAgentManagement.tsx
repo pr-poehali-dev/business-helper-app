@@ -269,7 +269,7 @@ export default function AIAgentManagement() {
           Автоматический запуск по расписанию
         </h3>
         <p className="text-sm text-purple-800 mb-4">
-          Для автоматического запуска агента каждый день используйте сервис <strong>cron-job.org</strong> или любой другой планировщик задач.
+          Для автоматического запуска агента каждый день используйте один из бесплатных сервисов планировщиков:
         </p>
         <div className="bg-white rounded-lg p-4 mb-4">
           <div className="text-xs text-gray-500 mb-2">Webhook URL для автозапуска:</div>
@@ -292,16 +292,32 @@ export default function AIAgentManagement() {
             </button>
           </div>
         </div>
-        <div className="text-xs text-purple-700 space-y-1">
-          <p><strong>Настройка расписания:</strong></p>
-          <ol className="list-decimal ml-4 space-y-1">
-            <li>Зайдите на <a href="https://cron-job.org" target="_blank" rel="noopener noreferrer" className="underline">cron-job.org</a> и зарегистрируйтесь</li>
-            <li>Создайте новую задачу (Create cronjob)</li>
-            <li>Вставьте URL выше в поле URL</li>
-            <li>Выберите метод: <strong>POST</strong></li>
-            <li>Настройте расписание (например, каждый день в 10:00)</li>
-            <li>Сохраните задачу — агент будет запускаться автоматически!</li>
-          </ol>
+        <div className="text-xs text-purple-700 space-y-3">
+          <div>
+            <p className="font-semibold mb-1">🔹 Вариант 1: EasyCron.com (рекомендую)</p>
+            <ol className="list-decimal ml-4 space-y-1">
+              <li>Зайдите на <a href="https://www.easycron.com" target="_blank" rel="noopener noreferrer" className="underline font-semibold">easycron.com</a> и зарегистрируйтесь</li>
+              <li>Создайте новую задачу (Create New Cron Job)</li>
+              <li>URL: вставьте URL выше</li>
+              <li>Cron Expression: <code className="bg-purple-100 px-1 rounded">0 10 * * *</code> (каждый день в 10:00)</li>
+              <li>Method: <strong>POST</strong></li>
+              <li>Сохраните — готово!</li>
+            </ol>
+          </div>
+          <div>
+            <p className="font-semibold mb-1">🔹 Вариант 2: Cron-job.org</p>
+            <ol className="list-decimal ml-4 space-y-1">
+              <li>Зайдите на <a href="https://console.cron-job.org/signup" target="_blank" rel="noopener noreferrer" className="underline">console.cron-job.org/signup</a></li>
+              <li>Создайте задачу, метод POST, расписание: Daily at 10:00</li>
+            </ol>
+          </div>
+          <div>
+            <p className="font-semibold mb-1">🔹 Вариант 3: crontab.guru + Render.com</p>
+            <ol className="list-decimal ml-4 space-y-1">
+              <li>Зарегистрируйтесь на <a href="https://render.com" target="_blank" rel="noopener noreferrer" className="underline">render.com</a> (бесплатно)</li>
+              <li>Создайте Cron Job, укажите URL и расписание</li>
+            </ol>
+          </div>
         </div>
       </div>
     </div>
