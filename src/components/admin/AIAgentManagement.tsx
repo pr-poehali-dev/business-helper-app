@@ -306,13 +306,23 @@ export default function AIAgentManagement() {
             </ol>
           </div>
           <div>
-            <p className="font-semibold mb-1">🇷🇺 Вариант 2: Yandex Cloud Functions Triggers</p>
-            <ol className="list-decimal ml-4 space-y-1">
-              <li>Зайдите в <a href="https://console.cloud.yandex.ru" target="_blank" rel="noopener noreferrer" className="underline">Yandex Cloud Console</a></li>
-              <li>Создайте Timer trigger (таймер по расписанию)</li>
+            <p className="font-semibold mb-1">🇷🇺 Вариант 2: Yandex Cloud Functions Triggers (подробно)</p>
+            <ol className="list-decimal ml-4 space-y-1 text-xs">
+              <li>Откройте <a href="https://console.cloud.yandex.ru/folders" target="_blank" rel="noopener noreferrer" className="underline font-semibold">Yandex Cloud Console</a></li>
+              <li>Выберите ваш каталог (folder) где развёрнуты функции</li>
+              <li>В меню слева найдите <strong>Serverless Containers</strong> → <strong>Triggers</strong></li>
+              <li>Нажмите <strong>"Создать триггер"</strong></li>
+              <li>Тип триггера: выберите <strong>"Таймер"</strong></li>
+              <li>Имя: <code className="bg-purple-100 px-1">ai-agent-daily-trigger</code></li>
               <li>Cron-выражение: <code className="bg-purple-100 px-1 rounded">0 10 * * ? *</code> (каждый день в 10:00 МСК)</li>
-              <li>Вызов HTTP: метод POST, URL выше</li>
+              <li>Тип вызова: выберите <strong>"HTTP"</strong></li>
+              <li>URL: вставьте <strong>Webhook URL</strong> выше (SCHEDULER_URL)</li>
+              <li>Метод: <strong>POST</strong></li>
+              <li>Заголовки (необязательно): <code className="bg-purple-100 px-1">Content-Type: application/json</code></li>
+              <li>Тело запроса (необязательно): оставьте пустым или <code className="bg-purple-100 px-1">{'{}'}</code></li>
+              <li>Нажмите <strong>"Создать триггер"</strong> — готово! ✅</li>
             </ol>
+            <p className="mt-2 text-purple-600 italic">💡 Триггер будет автоматически вызывать ваш агент каждый день в 10:00 по МСК</p>
           </div>
           <div>
             <p className="font-semibold mb-1">🔹 Вариант 3: EasyCron.com (международный)</p>
