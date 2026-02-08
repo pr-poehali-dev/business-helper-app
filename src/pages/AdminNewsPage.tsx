@@ -90,7 +90,7 @@ export default function AdminNewsPage() {
   };
 
   const publishNews = async (newsItem: NewsItem) => {
-    if (!confirm('Опубликовать новость в Telegram канал @kupetzvplyuse?')) return;
+    if (!confirm('Опубликовать новость в Telegram (@kupetzvplyuse) и ВКонтакте?')) return;
 
     try {
       const response = await fetch(PUBLISH_API, {
@@ -101,7 +101,18 @@ export default function AdminNewsPage() {
 
       const data = await response.json();
       if (data.success) {
-        alert('✅ Новость опубликована в Telegram канал!');
+        const results = data.results || {};
+        const platforms = [];
+        
+        if (results.telegram?.success) platforms.push('Telegram');
+        if (results.vk?.success) platforms.push('ВКонтакте');
+        
+        if (platforms.length > 0) {
+          alert(`✅ Новость опубликована в: ${platforms.join(', ')}`);
+        } else {
+          alert('⚠️ Не удалось опубликовать ни на одной платформе');
+        }
+        
         loadNews();
       } else {
         alert(`Ошибка: ${data.error || 'Не удалось опубликовать'}`);
@@ -197,7 +208,7 @@ export default function AdminNewsPage() {
               Управление новостями
             </h1>
             <p className="text-gray-600 mt-2">
-              Импорт, редактирование и публикация новостей в{' '}
+              Импорт, редактирование и публикация новостей в Telegram{' '}
               <a
                 href="https://t.me/kupetzvplyuse"
                 target="_blank"
@@ -205,6 +216,15 @@ export default function AdminNewsPage() {
                 className="text-blue-600 hover:underline font-medium"
               >
                 @kupetzvplyuse
+              </a>
+              {' '}и{' '}
+              <a
+                href="https://vk.com/kupetzvplyuse"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:underline font-medium"
+              >
+                ВКонтакте
               </a>
             </p>
           </div>
@@ -305,15 +325,26 @@ export default function AdminNewsPage() {
                       
                       <div className="flex items-center gap-2 flex-shrink-0">
                         {item.status === 'published' ? (
-                          <a
-                            href="https://t.me/kupetzvplyuse"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium hover:bg-blue-200 transition-colors flex items-center gap-1"
-                          >
-                            <Icon name="Send" size={12} />
-                            В Telegram
-                          </a>
+                          <>
+                            <a
+                              href="https://t.me/kupetzvplyuse"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium hover:bg-blue-200 transition-colors flex items-center gap-1"
+                            >
+                              <Icon name="Send" size={12} />
+                              TG
+                            </a>
+                            <a
+                              href="https://vk.com/kupetzvplyuse"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium hover:bg-blue-200 transition-colors flex items-center gap-1"
+                            >
+                              <Icon name="ExternalLink" size={12} />
+                              VK
+                            </a>
+                          </>
                         ) : (
                           <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
                             Черновик
@@ -361,7 +392,7 @@ export default function AdminNewsPage() {
                           className="bg-blue-600 hover:bg-blue-700"
                         >
                           <Icon name="Send" size={16} className="mr-1" />
-                          Опубликовать в TG
+                          Опубликовать
                         </Button>
                       ) : (
                         <Button
