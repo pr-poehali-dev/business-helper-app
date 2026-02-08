@@ -161,14 +161,16 @@ def improve_content_with_ai(title, content, source_url, api_key):
 
 
 def publish_news():
-    """Публикация готовых новостей в Telegram"""
+    """Публикация готовых новостей в Telegram и VK"""
     database_url = os.environ.get('DATABASE_URL')
     bot_token = os.environ.get('TELEGRAM_BOT_TOKEN')
     channel_id = os.environ.get('TELEGRAM_CHANNEL_ID')
+    vk_token = os.environ.get('VK_ACCESS_TOKEN')
+    vk_group_id = os.environ.get('VK_GROUP_ID')
     schema = os.environ.get('MAIN_DB_SCHEMA', 'public')
     
     if not all([database_url, bot_token, channel_id]):
-        return {'success': False, 'error': 'Missing credentials'}
+        return {'success': False, 'error': 'Missing Telegram credentials'}
     
     conn = psycopg2.connect(database_url)
     cursor = conn.cursor(cursor_factory=RealDictCursor)
@@ -178,11 +180,12 @@ def publish_news():
     cursor.execute(query)
     
     ready_news = cursor.fetchall()
-    published = 0
+    published_tg = 0
+    published_vk = 0
     
     for news in ready_news:
         # Публикуем в Telegram
-        success = send_to_telegram(
+        tg_success = send_to_telegram(
             news['title'],
             news['content'],
             news['source_url'],
@@ -191,11 +194,27 @@ def publish_news():
             channel_id
         )
         
-        if success:
-            # Обновляем статус
+        if tg_success:
+            published_tg += 1
+        
+        # Публикуем в VK (если настроен)
+        vk_success = False
+        if vk_token and vk_group_id:
+            vk_success = send_to_vk(
+                news['title'],
+                news['content'],
+                news['source_url'],
+                news['image_url'],
+                vk_token,
+                vk_group_id
+            )
+            if vk_success:
+                published_vk += 1
+        
+        # Обновляем статус если хотя бы в одну площадку опубликовали
+        if tg_success or vk_success:
             query = f"UPDATE {schema}.news_articles SET status = 'published', published_at = %s, updated_at = %s WHERE id = %s"
             cursor.execute(query, (datetime.now(), datetime.now(), news['id']))
-            published += 1
     
     conn.commit()
     cursor.close()
@@ -203,7 +222,8 @@ def publish_news():
     
     return {
         'success': True,
-        'published': published,
+        'published_telegram': published_tg,
+        'published_vk': published_vk,
         'total_ready': len(ready_news)
     }
 
@@ -242,6 +262,84 @@ def send_to_telegram(title, content, source_url, image_url, bot_token, channel_i
             )
         
         return True
+        
+    except Exception:
+        return False
+
+
+def send_to_vk(title, content, source_url, image_url, access_token, group_id):
+    """Отправка новости в VK-сообщество"""
+    try:
+        message = f"{title}\n\n{content}"
+        
+        if source_url:
+            message += f"\n\n🔗 Подробнее: {source_url}"
+        
+        attachments = []
+        
+        # Если есть изображение - загружаем на сервер VK
+        if image_url:
+            # 1. Получаем адрес сервера для загрузки
+            upload_server_response = requests.get(
+                'https://api.vk.com/method/photos.getWallUploadServer',
+                params={
+                    'access_token': access_token,
+                    'group_id': group_id,
+                    'v': '5.131'
+                },
+                timeout=10
+            ).json()
+            
+            if 'response' in upload_server_response:
+                upload_url = upload_server_response['response']['upload_url']
+                
+                # 2. Скачиваем изображение
+                image_data = requests.get(image_url, timeout=10).content
+                
+                # 3. Загружаем на сервер VK
+                upload_response = requests.post(
+                    upload_url,
+                    files={'photo': ('image.jpg', image_data, 'image/jpeg')},
+                    timeout=10
+                ).json()
+                
+                # 4. Сохраняем фото
+                save_response = requests.get(
+                    'https://api.vk.com/method/photos.saveWallPhoto',
+                    params={
+                        'access_token': access_token,
+                        'group_id': group_id,
+                        'photo': upload_response['photo'],
+                        'server': upload_response['server'],
+                        'hash': upload_response['hash'],
+                        'v': '5.131'
+                    },
+                    timeout=10
+                ).json()
+                
+                if 'response' in save_response and len(save_response['response']) > 0:
+                    photo = save_response['response'][0]
+                    attachments.append(f"photo{photo['owner_id']}_{photo['id']}")
+        
+        # Публикуем пост
+        post_params = {
+            'access_token': access_token,
+            'owner_id': f'-{group_id}',
+            'from_group': 1,
+            'message': message,
+            'v': '5.131'
+        }
+        
+        if attachments:
+            post_params['attachments'] = ','.join(attachments)
+        
+        post_response = requests.post(
+            'https://api.vk.com/method/wall.post',
+            data=post_params,
+            timeout=10
+        ).json()
+        
+        return 'response' in post_response
         
     except Exception:
         return False
