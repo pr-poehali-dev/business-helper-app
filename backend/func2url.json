@@ -1,4 +1,6 @@
 {
+  "news-manage": "https://functions.poehali.dev/97ce1b78-10ed-41b5-be3d-bef3a35789b5",
+  "news-import": "https://functions.poehali.dev/182da4d3-fee1-4432-a5b6-20c44e5670c6",
   "news-list": "https://functions.poehali.dev/5d29c9e1-5acb-4318-b4ae-ea1d2943e9aa",
   "db-migrate": "https://functions.poehali.dev/be5d4c70-d941-48ff-99e5-5f19201b7a89",
   "scheduler": "https://functions.poehali.dev/38107b77-1b0c-4bb7-b18b-f5164553c08b",

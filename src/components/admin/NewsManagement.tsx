@@ -169,10 +169,16 @@ const NewsManagement = ({ articles, onReload }: NewsManagementProps) => {
           <h2 className="text-2xl font-bold">Управление новостями</h2>
           <p className="text-gray-600">Публикуются автоматически в @kupetzvplyuse</p>
         </div>
-        <Button onClick={() => setDialogOpen(true)} className="bg-blue-600 hover:bg-blue-700">
-          <Icon name="Plus" className="mr-2" size={18} />
-          Создать статью
-        </Button>
+        <div className="flex gap-3">
+          <Button onClick={() => window.location.href = '/admin/news'} variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50">
+            <Icon name="Settings" className="mr-2" size={18} />
+            Новая админка
+          </Button>
+          <Button onClick={() => setDialogOpen(true)} className="bg-blue-600 hover:bg-blue-700">
+            <Icon name="Plus" className="mr-2" size={18} />
+            Создать статью
+          </Button>
+        </div>
       </div>
 
       <div className="grid gap-4">

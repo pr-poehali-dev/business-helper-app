@@ -11,6 +11,7 @@ import ClientCabinet from "./pages/ClientCabinet";
 import NotFound from "./pages/NotFound";
 import ChatGPTPage from "./pages/ChatGPTPage";
 import NewsPage from "./pages/NewsPage";
+import AdminNewsPage from "./pages/AdminNewsPage";
 
 const queryClient = new QueryClient();
 
@@ -24,6 +25,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/admin" element={<AdminPanel />} />
+          <Route path="/admin/news" element={<AdminNewsPage />} />
           <Route path="/cabinet" element={<ClientCabinet />} />
           <Route path="/chatgpt" element={<ChatGPTPage />} />
           <Route path="/news" element={<NewsPage />} />

@@ -1,0 +1,15 @@
+{
+  "tests": [
+    {
+      "name": "Import news from sberanalytics.ru",
+      "method": "POST",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true,
+        "imported": "number"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
