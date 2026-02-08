@@ -22,6 +22,7 @@ import {
 
 const MANAGE_API = 'https://functions.poehali.dev/97ce1b78-10ed-41b5-be3d-bef3a35789b5';
 const IMPORT_API = 'https://functions.poehali.dev/182da4d3-fee1-4432-a5b6-20c44e5670c6';
+const PUBLISH_API = 'https://functions.poehali.dev/ed51a7b8-9f6c-4d9d-92fa-ec6c559b4d5d';
 
 interface NewsItem {
   id: number;
@@ -89,21 +90,21 @@ export default function AdminNewsPage() {
   };
 
   const publishNews = async (newsItem: NewsItem) => {
+    if (!confirm('Опубликовать новость в Telegram канал @kupetzvplyuse?')) return;
+
     try {
-      const response = await fetch(MANAGE_API, {
-        method: 'PUT',
+      const response = await fetch(PUBLISH_API, {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          ...newsItem,
-          status: 'published',
-          published_date: new Date().toISOString().split('T')[0]
-        })
+        body: JSON.stringify({ id: newsItem.id })
       });
 
       const data = await response.json();
       if (data.success) {
-        alert('Новость успешно опубликована!');
+        alert('✅ Новость опубликована в Telegram канал!');
         loadNews();
+      } else {
+        alert(`Ошибка: ${data.error || 'Не удалось опубликовать'}`);
       }
     } catch (error) {
       console.error('Error publishing news:', error);
@@ -195,7 +196,17 @@ export default function AdminNewsPage() {
               <Icon name="Settings" size={32} className="text-blue-600" />
               Управление новостями
             </h1>
-            <p className="text-gray-600 mt-2">Импорт, редактирование и публикация новостей</p>
+            <p className="text-gray-600 mt-2">
+              Импорт, редактирование и публикация новостей в{' '}
+              <a
+                href="https://t.me/kupetzvplyuse"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:underline font-medium"
+              >
+                @kupetzvplyuse
+              </a>
+            </p>
           </div>
           
           <div className="flex gap-3">
@@ -294,9 +305,15 @@ export default function AdminNewsPage() {
                       
                       <div className="flex items-center gap-2 flex-shrink-0">
                         {item.status === 'published' ? (
-                          <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
-                            Опубликовано
-                          </span>
+                          <a
+                            href="https://t.me/kupetzvplyuse"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium hover:bg-blue-200 transition-colors flex items-center gap-1"
+                          >
+                            <Icon name="Send" size={12} />
+                            В Telegram
+                          </a>
                         ) : (
                           <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-medium">
                             Черновик
@@ -341,9 +358,10 @@ export default function AdminNewsPage() {
                         <Button
                           size="sm"
                           onClick={() => publishNews(item)}
+                          className="bg-blue-600 hover:bg-blue-700"
                         >
-                          <Icon name="Upload" size={16} className="mr-1" />
-                          Опубликовать
+                          <Icon name="Send" size={16} className="mr-1" />
+                          Опубликовать в TG
                         </Button>
                       ) : (
                         <Button

@@ -1,0 +1,18 @@
+{
+  "tests": [
+    {
+      "name": "Publish news to Telegram",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "id": 1
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "success": true,
+        "message": "string"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
