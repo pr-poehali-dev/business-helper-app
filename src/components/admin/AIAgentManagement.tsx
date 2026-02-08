@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import Icon from '@/components/ui/icon';
+import AgentStats from './agent/AgentStats';
+import AutoModeControl from './agent/AutoModeControl';
+import ConfigurationPanels from './agent/ConfigurationPanels';
+import AgentControls from './agent/AgentControls';
 
 const AI_AGENT_URL = 'https://functions.poehali.dev/c42f2362-0697-4b7f-acd6-202c45772cba';
 const NEWS_SCRAPER_URL = 'https://functions.poehali.dev/80bcda15-af32-4342-a690-bc57930219a7';
 const SCHEDULER_URL = 'https://functions.poehali.dev/38107b77-1b0c-4bb7-b18b-f5164553c08b';
 
-interface AgentStats {
+interface AgentStatsData {
   drafts: number;
   ready: number;
   published: number;
@@ -13,7 +16,7 @@ interface AgentStats {
 }
 
 export default function AIAgentManagement() {
-  const [stats, setStats] = useState<AgentStats>({ drafts: 0, ready: 0, published: 0, total: 0 });
+  const [stats, setStats] = useState<AgentStatsData>({ drafts: 0, ready: 0, published: 0, total: 0 });
   const [loading, setLoading] = useState(false);
   const [logs, setLogs] = useState<string[]>([]);
   const [autoMode, setAutoMode] = useState(false);
@@ -27,9 +30,7 @@ export default function AIAgentManagement() {
   useEffect(() => {
     if (autoMode) {
       addLog(`🤖 Автоматический режим включен (каждые ${intervalMinutes} мин)`);
-      // Запускаем сразу
       runAutoPipeline();
-      // Запускаем по расписанию
       intervalRef.current = setInterval(() => {
         runAutoPipeline();
       }, intervalMinutes * 60 * 1000);
@@ -235,366 +236,36 @@ export default function AIAgentManagement() {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold flex items-center gap-2">
-            <Icon name="Bot" size={24} />
-            ИИ-Агент для Новостей
-          </h2>
-          <button
-            onClick={loadStats}
-            disabled={loading}
-            className="px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors disabled:opacity-50"
-          >
-            <Icon name="RefreshCw" size={16} className="inline mr-2" />
-            Обновить
-          </button>
-        </div>
+      <AgentStats 
+        stats={stats} 
+        loading={loading} 
+        onRefresh={loadStats}
+      />
 
-        <div className="grid grid-cols-4 gap-4 mb-6">
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <div className="text-2xl font-bold text-blue-600">{stats.drafts}</div>
-            <div className="text-sm text-gray-600">Черновики</div>
-          </div>
-          <div className="bg-green-50 p-4 rounded-lg">
-            <div className="text-2xl font-bold text-green-600">{stats.ready}</div>
-            <div className="text-sm text-gray-600">Готовые</div>
-          </div>
-          <div className="bg-purple-50 p-4 rounded-lg">
-            <div className="text-2xl font-bold text-purple-600">{stats.published}</div>
-            <div className="text-sm text-gray-600">Опубликовано</div>
-          </div>
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <div className="text-2xl font-bold text-gray-600">{stats.total}</div>
-            <div className="text-sm text-gray-600">Всего</div>
-          </div>
-        </div>
+      <AutoModeControl
+        autoMode={autoMode}
+        intervalMinutes={intervalMinutes}
+        loading={loading}
+        onToggle={setAutoMode}
+        onIntervalChange={setIntervalMinutes}
+      />
 
-        {/* Автоматический режим */}
-        <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-lg mb-6 border border-blue-200">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="relative inline-block">
-                <input
-                  type="checkbox"
-                  id="autoMode"
-                  checked={autoMode}
-                  onChange={(e) => setAutoMode(e.target.checked)}
-                  className="sr-only peer"
-                  disabled={loading}
-                />
-                <label
-                  htmlFor="autoMode"
-                  className="block w-14 h-8 bg-gray-300 peer-checked:bg-green-500 rounded-full cursor-pointer transition-colors peer-disabled:opacity-50 peer-disabled:cursor-not-allowed"
-                >
-                  <div className="absolute top-1 left-1 w-6 h-6 bg-white rounded-full shadow-md transition-transform peer-checked:translate-x-6" />
-                </label>
-              </div>
-              <div>
-                <div className="font-semibold text-gray-900 flex items-center gap-2">
-                  <Icon name="Zap" size={20} className={autoMode ? 'text-green-600' : 'text-gray-400'} />
-                  Автоматический режим
-                </div>
-                <div className="text-sm text-gray-600">
-                  {autoMode ? '🟢 Работает' : 'Выключен'}
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              <label className="text-sm font-medium text-gray-700">Интервал (мин):</label>
-              <select
-                value={intervalMinutes}
-                onChange={(e) => setIntervalMinutes(Number(e.target.value))}
-                disabled={loading || autoMode}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <option value={5}>5</option>
-                <option value={10}>10</option>
-                <option value={15}>15</option>
-                <option value={30}>30</option>
-                <option value={60}>60</option>
-                <option value={120}>120</option>
-              </select>
-            </div>
-          </div>
-          <div className="flex items-start gap-2 text-xs text-gray-600">
-            <Icon name="Info" size={14} className="mt-0.5 flex-shrink-0" />
-            <div>
-              <strong>Браузерный режим:</strong> работает только при открытой вкладке. 
-              <a 
-                href="https://cron-job.org" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:underline ml-1"
-              >
-                Настройте серверный триггер →
-              </a>
-              <span className="ml-1 text-gray-500">(URL: {SCHEDULER_URL})</span>
-            </div>
-          </div>
-        </div>
+      <ConfigurationPanels
+        schedulerUrl={SCHEDULER_URL}
+        loading={loading}
+        onTestScheduler={testScheduler}
+        onRunMigration={runMigration}
+      />
 
-        {/* Настройка публикации VK */}
-        <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4 mb-6">
-          <div className="flex items-start gap-3">
-            <Icon name="MessageSquare" size={20} className="text-indigo-600 flex-shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <div className="font-semibold text-indigo-900 mb-2">📱 Настройка публикации ВКонтакте</div>
-              <div className="text-sm text-indigo-800 mb-3">
-                Чтобы агент публиковал новости в VK сообщество, добавьте два ключа в секреты проекта:
-              </div>
-              <div className="space-y-3 text-sm">
-                <div className="bg-white rounded p-3 border border-indigo-200">
-                  <div className="font-semibold text-indigo-900 mb-1">1. VK_ACCESS_TOKEN</div>
-                  <div className="text-indigo-700 mb-2">Получить токен:</div>
-                  <ol className="list-decimal ml-5 space-y-1 text-indigo-800">
-                    <li>Откройте <a href="https://vk.com/kupetzvplyuse" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">vk.com/kupetzvplyuse</a></li>
-                    <li>Управление → Настройки → Работа с API</li>
-                    <li>Создайте ключ доступа с правами: <code className="bg-indigo-100 px-1 py-0.5 rounded text-xs">wall</code> и <code className="bg-indigo-100 px-1 py-0.5 rounded text-xs">photos</code></li>
-                    <li>Скопируйте токен и добавьте в секреты проекта</li>
-                  </ol>
-                </div>
-                <div className="bg-white rounded p-3 border border-indigo-200">
-                  <div className="font-semibold text-indigo-900 mb-1">2. VK_GROUP_ID</div>
-                  <div className="text-indigo-700 mb-2">ID сообщества (только цифры, без минуса):</div>
-                  <ol className="list-decimal ml-5 space-y-1 text-indigo-800">
-                    <li>Откройте <a href="https://vk.com/kupetzvplyuse" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">vk.com/kupetzvplyuse</a></li>
-                    <li>Управление → Настройки</li>
-                    <li>Найдите "Идентификатор сообщества" (например: 123456789)</li>
-                    <li>Добавьте это число в секреты</li>
-                  </ol>
-                </div>
-              </div>
-              <div className="mt-3 text-xs text-indigo-600 bg-white rounded p-2 border border-indigo-200">
-                💡 Если секреты не добавлены, публикация будет идти только в Telegram
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Инфо о серверном расписании */}
-        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-          <div className="flex items-start gap-3">
-            <Icon name="Clock" size={20} className="text-yellow-600 flex-shrink-0 mt-0.5" />
-            <div className="flex-1">
-              <div className="font-semibold text-yellow-900 mb-2">⚡ Серверное расписание (24/7)</div>
-              <div className="text-sm text-yellow-800 mb-3">
-                Настройте автоматический запуск через внешний триггер — работает независимо от браузера:
-              </div>
-              <div className="space-y-2 text-sm">
-                <div className="flex items-start gap-2">
-                  <span className="font-semibold text-yellow-900 min-w-[80px]">URL:</span>
-                  <code className="bg-yellow-100 px-2 py-1 rounded text-xs flex-1 break-all">{SCHEDULER_URL}</code>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="font-semibold text-yellow-900 min-w-[80px]">Метод:</span>
-                  <code className="bg-yellow-100 px-2 py-1 rounded text-xs">POST</code>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="font-semibold text-yellow-900 min-w-[80px]">Сервисы:</span>
-                  <div className="flex-1 text-yellow-800">
-                    <a href="https://cron-job.org" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">cron-job.org</a>
-                    {' • '}
-                    <a href="https://easycron.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">easycron.com</a>
-                    {' • '}
-                    <span className="text-yellow-700">Yandex Cloud Triggers</span>
-                  </div>
-                </div>
-              </div>
-              <button
-                onClick={testScheduler}
-                disabled={loading}
-                className="mt-3 px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-colors disabled:opacity-50 text-sm font-medium"
-              >
-                <Icon name="TestTube" size={16} className="inline mr-2" />
-                Протестировать триггер
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div className="space-y-3">
-          <div className="flex gap-3">
-            <button
-              onClick={runScraper}
-              disabled={loading}
-              className="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50 font-medium"
-            >
-              <Icon name="Globe" size={18} className="inline mr-2" />
-              1. Собрать новости с сайта
-            </button>
-            <button
-              onClick={processNews}
-              disabled={loading}
-              className="flex-1 px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors disabled:opacity-50 font-medium"
-            >
-              <Icon name="Sparkles" size={18} className="inline mr-2" />
-              2. Обработать через ИИ
-            </button>
-            <button
-              onClick={publishNews}
-              disabled={loading}
-              className="flex-1 px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors disabled:opacity-50 font-medium"
-            >
-              <Icon name="Send" size={18} className="inline mr-2" />
-              3. Опубликовать (TG + VK)
-            </button>
-          </div>
-
-          <button
-            onClick={runAutoPipeline}
-            disabled={loading}
-            className="w-full px-4 py-4 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-lg transition-all disabled:opacity-50 font-semibold text-lg shadow-lg"
-          >
-            <Icon name="Zap" size={20} className="inline mr-2" />
-            ⚡ Запустить полный цикл (1+2+3)
-          </button>
-        </div>
-      </div>
-
-      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-        <div className="flex items-start gap-3">
-          <Icon name="AlertTriangle" size={20} className="text-yellow-600 mt-0.5" />
-          <div className="flex-1">
-            <h3 className="font-semibold text-yellow-900 mb-2">Требуется настройка базы данных</h3>
-            <p className="text-sm text-yellow-800 mb-3">
-              Если вы видите ошибку "object not found" или "InsufficientPrivilege", нужно применить миграцию для создания таблицы news_articles.
-            </p>
-            <div className="flex gap-2">
-              <button
-                onClick={runMigration}
-                disabled={loading}
-                className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-colors disabled:opacity-50 font-medium"
-              >
-                <Icon name="Database" size={16} className="inline mr-2" />
-                🔧 Применить миграцию БД
-              </button>
-              <a
-                href="https://functions.poehali.dev/db-migrate"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors font-medium inline-flex items-center"
-              >
-                <Icon name="ExternalLink" size={16} className="inline mr-2" />
-                Открыть в новой вкладке
-              </a>
-            </div>
-            <p className="text-xs text-yellow-700 mt-2">
-              💡 Если кнопка не работает, откройте ссылку в новой вкладке — увидите результат миграции
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-gray-900 rounded-lg p-6 text-green-400 font-mono text-sm">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-white">Логи работы агента</h3>
-          <button
-            onClick={() => setLogs([])}
-            className="text-xs text-gray-400 hover:text-white"
-          >
-            Очистить
-          </button>
-        </div>
-        <div className="space-y-1 max-h-64 overflow-y-auto">
-          {logs.length === 0 ? (
-            <div className="text-gray-500">Логи появятся после запуска агента...</div>
-          ) : (
-            logs.map((log, i) => (
-              <div key={i} className="text-xs">{log}</div>
-            ))
-          )}
-        </div>
-      </div>
-
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <h3 className="font-semibold text-blue-900 mb-2 flex items-center gap-2">
-          <Icon name="Info" size={18} />
-          Как работает агент
-        </h3>
-        <ul className="text-sm text-blue-800 space-y-1">
-          <li>• <strong>Шаг 1:</strong> Парсит продукты с сайта СберАналитики и сохраняет как черновики</li>
-          <li>• <strong>Шаг 2:</strong> ИИ переписывает описания в интересные новости</li>
-          <li>• <strong>Шаг 3:</strong> Публикует готовые новости в Telegram (@kupetzvplyuse) и VK (vk.com/kupetzvplyuse)</li>
-          <li>• <strong>Автоцикл:</strong> Выполняет все 3 шага автоматически одной кнопкой</li>
-        </ul>
-      </div>
-
-      <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-6">
-        <h3 className="font-semibold text-purple-900 mb-3 flex items-center gap-2">
-          <Icon name="Clock" size={20} />
-          Автоматический запуск по расписанию
-        </h3>
-        <p className="text-sm text-purple-800 mb-4">
-          Для автоматического запуска агента каждый день используйте один из бесплатных сервисов планировщиков:
-        </p>
-        <div className="bg-white rounded-lg p-4 mb-4">
-          <div className="text-xs text-gray-500 mb-2">Webhook URL для автозапуска:</div>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={SCHEDULER_URL}
-              readOnly
-              className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm font-mono bg-gray-50"
-            />
-            <button
-              onClick={() => {
-                navigator.clipboard.writeText(SCHEDULER_URL);
-                addLog('📋 URL скопирован в буфер обмена');
-              }}
-              className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg text-sm transition-colors"
-            >
-              <Icon name="Copy" size={16} className="inline mr-1" />
-              Копировать
-            </button>
-          </div>
-        </div>
-        <div className="text-xs text-purple-700 space-y-3">
-          <div>
-            <p className="font-semibold mb-1">🇷🇺 Вариант 1: UptimeRobot (рекомендую, работает из РФ)</p>
-            <ol className="list-decimal ml-4 space-y-1">
-              <li>Зайдите на <a href="https://uptimerobot.com" target="_blank" rel="noopener noreferrer" className="underline font-semibold">uptimerobot.com</a> и зарегистрируйтесь</li>
-              <li>Создайте новый монитор: Add New Monitor → HTTP(s)</li>
-              <li>URL: вставьте URL выше</li>
-              <li>Monitoring Interval: каждые <strong>24 часа</strong> (или любой интервал)</li>
-              <li>Monitor Type: HTTP(s) - Keyword</li>
-              <li>Keyword: <code className="bg-purple-100 px-1 rounded">success</code></li>
-              <li>Сохраните — UptimeRobot будет автоматически дергать URL!</li>
-            </ol>
-          </div>
-          <div>
-            <p className="font-semibold mb-1">🇷🇺 Вариант 2: Yandex Cloud Functions Triggers (подробно)</p>
-            <ol className="list-decimal ml-4 space-y-1 text-xs">
-              <li>Откройте <a href="https://console.cloud.yandex.ru/folders" target="_blank" rel="noopener noreferrer" className="underline font-semibold">Yandex Cloud Console</a></li>
-              <li>Выберите ваш каталог (folder) где развёрнуты функции</li>
-              <li>В меню слева найдите <strong>Serverless Containers</strong> → <strong>Triggers</strong></li>
-              <li>Нажмите <strong>"Создать триггер"</strong></li>
-              <li>Тип триггера: выберите <strong>"Таймер"</strong></li>
-              <li>Имя: <code className="bg-purple-100 px-1">ai-agent-daily-trigger</code></li>
-              <li>Cron-выражение: <code className="bg-purple-100 px-1 rounded">0 10 * * ? *</code> (каждый день в 10:00 МСК)</li>
-              <li>Тип вызова: выберите <strong>"HTTP"</strong></li>
-              <li>URL: вставьте <strong>Webhook URL</strong> выше (SCHEDULER_URL)</li>
-              <li>Метод: <strong>POST</strong></li>
-              <li>Заголовки (необязательно): <code className="bg-purple-100 px-1">Content-Type: application/json</code></li>
-              <li>Тело запроса (необязательно): оставьте пустым или <code className="bg-purple-100 px-1">{'{}'}</code></li>
-              <li>Нажмите <strong>"Создать триггер"</strong> — готово! ✅</li>
-            </ol>
-            <p className="mt-2 text-purple-600 italic">💡 Триггер будет автоматически вызывать ваш агент каждый день в 10:00 по МСК</p>
-          </div>
-          <div>
-            <p className="font-semibold mb-1">🔹 Вариант 3: EasyCron.com (международный)</p>
-            <ol className="list-decimal ml-4 space-y-1">
-              <li>Зайдите на <a href="https://www.easycron.com" target="_blank" rel="noopener noreferrer" className="underline">easycron.com</a></li>
-              <li>URL: вставьте URL выше, Method: POST</li>
-              <li>Cron: <code className="bg-purple-100 px-1 rounded">0 10 * * *</code> (10:00 каждый день)</li>
-            </ol>
-          </div>
-          <div className="mt-3 p-2 bg-green-50 border border-green-200 rounded">
-            <p className="font-semibold text-green-800">💡 Самый простой: UptimeRobot</p>
-            <p className="text-green-700">Работает из России, бесплатный, надёжный. Просто создаёте "монитор" который будет проверять ваш URL каждые 24 часа.</p>
-          </div>
-        </div>
-      </div>
+      <AgentControls
+        loading={loading}
+        logs={logs}
+        onRunScraper={runScraper}
+        onProcessNews={processNews}
+        onPublishNews={publishNews}
+        onRunAutoPipeline={runAutoPipeline}
+        onClearLogs={() => setLogs([])}
+      />
     </div>
   );
 }
