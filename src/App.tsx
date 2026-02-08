@@ -10,6 +10,7 @@ import AdminPanel from "./pages/AdminPanel";
 import ClientCabinet from "./pages/ClientCabinet";
 import NotFound from "./pages/NotFound";
 import ChatGPTPage from "./pages/ChatGPTPage";
+import NewsPage from "./pages/NewsPage";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/admin" element={<AdminPanel />} />
           <Route path="/cabinet" element={<ClientCabinet />} />
           <Route path="/chatgpt" element={<ChatGPTPage />} />
+          <Route path="/news" element={<NewsPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

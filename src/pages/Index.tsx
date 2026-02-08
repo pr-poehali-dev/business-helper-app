@@ -5,6 +5,7 @@ import AdvantagesSection from '@/components/AdvantagesSection';
 import AIAssistantSection from '@/components/AIAssistantSection';
 import ServicesSection from '@/components/ServicesSection';
 import CategoriesSection from '@/components/CategoriesSection';
+import NewsPreviewSection from '@/components/NewsPreviewSection';
 import PartnersNewsSection from '@/components/PartnersNewsSection';
 import CabinetFaqContactsSection from '@/components/CabinetFaqContactsSection';
 import Footer from '@/components/Footer';
@@ -418,6 +419,7 @@ const Index = () => {
         onCategoryChange={setSelectedCategory}
         onProductConnect={handleProductConnect}
       />
+      <NewsPreviewSection />
       <PartnersNewsSection partners={partners} news={news} />
       <CabinetFaqContactsSection faq={faq} />
       <Footer />

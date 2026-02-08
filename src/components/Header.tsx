@@ -49,7 +49,7 @@ const Header = () => {
           <nav className="hidden lg:flex items-center gap-8">
             <a href="#categories" className="text-sm text-gray-600 hover:text-blue-600 transition-colors font-medium">Услуги</a>
             <a href="#partners" className="text-sm text-gray-600 hover:text-blue-600 transition-colors font-medium">Партнёры</a>
-            <a href="#news" className="text-sm text-gray-600 hover:text-blue-600 transition-colors font-medium">Новости</a>
+            <a href="/news" className="text-sm text-gray-600 hover:text-blue-600 transition-colors font-medium">Новости</a>
             <a href="#faq" className="text-sm text-gray-600 hover:text-blue-600 transition-colors font-medium">FAQ</a>
             <a href="#contacts" className="text-sm text-gray-600 hover:text-blue-600 transition-colors font-medium">Контакты</a>
           </nav>
