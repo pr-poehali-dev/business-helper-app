@@ -8,10 +8,12 @@ const NEWS_API_URL = 'https://functions.poehali.dev/5d29c9e1-5acb-4318-b4ae-ea1d
 interface NewsItem {
   id: number;
   title: string;
+  description: string;
   content: string;
+  badge?: string;
   source_url: string;
   image_url: string;
-  published_at: string;
+  published_date: string;
   created_at: string;
 }
 
@@ -83,7 +85,7 @@ export default function NewsPreviewSection() {
               <div className="p-6">
                 <div className="flex items-center gap-2 text-xs text-gray-500 mb-3">
                   <Icon name="Calendar" size={14} />
-                  {formatDate(item.published_at || item.created_at)}
+                  {formatDate(item.published_date || item.created_at)}
                 </div>
                 
                 <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
@@ -91,7 +93,7 @@ export default function NewsPreviewSection() {
                 </h3>
                 
                 <p className="text-gray-600 text-sm line-clamp-3">
-                  {item.content}
+                  {item.description || item.content}
                 </p>
               </div>
             </article>

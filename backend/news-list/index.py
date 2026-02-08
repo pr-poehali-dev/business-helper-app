@@ -48,18 +48,20 @@ def handler(event: dict, context) -> dict:
                 SELECT 
                     id, 
                     title, 
+                    description,
                     content, 
                     source_url, 
                     image_url,
-                    published_at,
+                    badge,
+                    published_date,
                     created_at
                 FROM {schema}.news_articles 
                 WHERE status = 'published'
-                ORDER BY published_at DESC NULLS LAST, created_at DESC
-                LIMIT %s OFFSET %s
+                ORDER BY published_date DESC NULLS LAST, created_at DESC
+                LIMIT {limit} OFFSET {offset}
             """
             
-            cursor.execute(query, (limit, offset))
+            cursor.execute(query)
             news = cursor.fetchall()
             
             count_query = f"SELECT COUNT(*) as total FROM {schema}.news_articles WHERE status = 'published'"
@@ -70,8 +72,8 @@ def handler(event: dict, context) -> dict:
             conn.close()
             
             for item in news:
-                if item.get('published_at'):
-                    item['published_at'] = item['published_at'].isoformat()
+                if item.get('published_date'):
+                    item['published_date'] = item['published_date'].isoformat()
                 if item.get('created_at'):
                     item['created_at'] = item['created_at'].isoformat()
             
