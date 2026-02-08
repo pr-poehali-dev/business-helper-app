@@ -1,4 +1,5 @@
 {
+  "db-migrate": "https://functions.poehali.dev/be5d4c70-d941-48ff-99e5-5f19201b7a89",
   "scheduler": "https://functions.poehali.dev/38107b77-1b0c-4bb7-b18b-f5164553c08b",
   "news-scraper": "https://functions.poehali.dev/80bcda15-af32-4342-a690-bc57930219a7",
   "ai-news-agent": "https://functions.poehali.dev/c42f2362-0697-4b7f-acd6-202c45772cba",

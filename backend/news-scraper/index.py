@@ -129,10 +129,15 @@ def save_to_database(products):
         
         if not existing:
             # Создаем новую новость
-            query = f"INSERT INTO {schema}.news_articles (title, content, source_url, image_url, status, created_at, updated_at) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+            # description и content — обязательные поля
+            content = product['description'] or 'Новый продукт'
+            description = product['description'][:200] if product['description'] else 'Описание отсутствует'
+            
+            query = f"INSERT INTO {schema}.news_articles (title, description, content, source_url, image_url, status, created_at, updated_at) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
             cursor.execute(query, (
                 product['title'],
-                product['description'],
+                description,
+                content,
                 product['link'],
                 product['image_url'],
                 'draft',
