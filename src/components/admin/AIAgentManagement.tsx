@@ -206,6 +206,29 @@ export default function AIAgentManagement() {
     }
   };
 
+  const testScheduler = async () => {
+    setLoading(true);
+    addLog('🧪 Тестирование серверного триггера...');
+    
+    try {
+      const response = await fetch(SCHEDULER_URL, { method: 'POST' });
+      const result = await response.json();
+      
+      if (result.success) {
+        addLog('✅ Серверный триггер работает!');
+        addLog(`📊 Время выполнения: ${result.timestamp}`);
+      } else {
+        addLog(`❌ Ошибка триггера: ${result.error}`);
+      }
+      
+      await loadStats();
+    } catch (error) {
+      addLog(`❌ Ошибка: ${error}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-lg shadow-sm p-6">
@@ -290,8 +313,61 @@ export default function AIAgentManagement() {
               </select>
             </div>
           </div>
-          <div className="text-xs text-gray-600">
-            💡 Включите автоматический режим для регулярного парсинга, обработки и публикации новостей
+          <div className="flex items-start gap-2 text-xs text-gray-600">
+            <Icon name="Info" size={14} className="mt-0.5 flex-shrink-0" />
+            <div>
+              <strong>Браузерный режим:</strong> работает только при открытой вкладке. 
+              <a 
+                href="https://cron-job.org" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-blue-600 hover:underline ml-1"
+              >
+                Настройте серверный триггер →
+              </a>
+              <span className="ml-1 text-gray-500">(URL: {SCHEDULER_URL})</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Инфо о серверном расписании */}
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+          <div className="flex items-start gap-3">
+            <Icon name="Clock" size={20} className="text-yellow-600 flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <div className="font-semibold text-yellow-900 mb-2">⚡ Серверное расписание (24/7)</div>
+              <div className="text-sm text-yellow-800 mb-3">
+                Настройте автоматический запуск через внешний триггер — работает независимо от браузера:
+              </div>
+              <div className="space-y-2 text-sm">
+                <div className="flex items-start gap-2">
+                  <span className="font-semibold text-yellow-900 min-w-[80px]">URL:</span>
+                  <code className="bg-yellow-100 px-2 py-1 rounded text-xs flex-1 break-all">{SCHEDULER_URL}</code>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="font-semibold text-yellow-900 min-w-[80px]">Метод:</span>
+                  <code className="bg-yellow-100 px-2 py-1 rounded text-xs">POST</code>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="font-semibold text-yellow-900 min-w-[80px]">Сервисы:</span>
+                  <div className="flex-1 text-yellow-800">
+                    <a href="https://cron-job.org" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">cron-job.org</a>
+                    {' • '}
+                    <a href="https://easycron.com" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">easycron.com</a>
+                    {' • '}
+                    <span className="text-yellow-700">Yandex Cloud Triggers</span>
+                  </div>
+                </div>
+              </div>
+              <button
+                onClick={testScheduler}
+                disabled={loading}
+                className="mt-3 px-4 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-colors disabled:opacity-50 text-sm font-medium"
+              >
+                <Icon name="TestTube" size={16} className="inline mr-2" />
+                Протестировать триггер
+              </button>
+            </div>
           </div>
         </div>
 
