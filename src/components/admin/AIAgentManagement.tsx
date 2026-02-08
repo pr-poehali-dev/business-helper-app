@@ -16,10 +16,37 @@ export default function AIAgentManagement() {
   const [stats, setStats] = useState<AgentStats>({ drafts: 0, ready: 0, published: 0, total: 0 });
   const [loading, setLoading] = useState(false);
   const [logs, setLogs] = useState<string[]>([]);
+  const [autoMode, setAutoMode] = useState(false);
+  const [intervalMinutes, setIntervalMinutes] = useState(30);
+  const intervalRef = React.useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     loadStats();
   }, []);
+
+  useEffect(() => {
+    if (autoMode) {
+      addLog(`🤖 Автоматический режим включен (каждые ${intervalMinutes} мин)`);
+      // Запускаем сразу
+      runAutoPipeline();
+      // Запускаем по расписанию
+      intervalRef.current = setInterval(() => {
+        runAutoPipeline();
+      }, intervalMinutes * 60 * 1000);
+    } else {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+        addLog('⏸️ Автоматический режим выключен');
+      }
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [autoMode, intervalMinutes]);
 
   const loadStats = async () => {
     try {
@@ -213,6 +240,58 @@ export default function AIAgentManagement() {
           <div className="bg-gray-50 p-4 rounded-lg">
             <div className="text-2xl font-bold text-gray-600">{stats.total}</div>
             <div className="text-sm text-gray-600">Всего</div>
+          </div>
+        </div>
+
+        {/* Автоматический режим */}
+        <div className="bg-gradient-to-r from-blue-50 to-purple-50 p-6 rounded-lg mb-6 border border-blue-200">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <div className="relative inline-block">
+                <input
+                  type="checkbox"
+                  id="autoMode"
+                  checked={autoMode}
+                  onChange={(e) => setAutoMode(e.target.checked)}
+                  className="sr-only peer"
+                  disabled={loading}
+                />
+                <label
+                  htmlFor="autoMode"
+                  className="block w-14 h-8 bg-gray-300 peer-checked:bg-green-500 rounded-full cursor-pointer transition-colors peer-disabled:opacity-50 peer-disabled:cursor-not-allowed"
+                >
+                  <div className="absolute top-1 left-1 w-6 h-6 bg-white rounded-full shadow-md transition-transform peer-checked:translate-x-6" />
+                </label>
+              </div>
+              <div>
+                <div className="font-semibold text-gray-900 flex items-center gap-2">
+                  <Icon name="Zap" size={20} className={autoMode ? 'text-green-600' : 'text-gray-400'} />
+                  Автоматический режим
+                </div>
+                <div className="text-sm text-gray-600">
+                  {autoMode ? '🟢 Работает' : 'Выключен'}
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <label className="text-sm font-medium text-gray-700">Интервал (мин):</label>
+              <select
+                value={intervalMinutes}
+                onChange={(e) => setIntervalMinutes(Number(e.target.value))}
+                disabled={loading || autoMode}
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={15}>15</option>
+                <option value={30}>30</option>
+                <option value={60}>60</option>
+                <option value={120}>120</option>
+              </select>
+            </div>
+          </div>
+          <div className="text-xs text-gray-600">
+            💡 Включите автоматический режим для регулярного парсинга, обработки и публикации новостей
           </div>
         </div>
 
