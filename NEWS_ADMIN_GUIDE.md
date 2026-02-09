@@ -223,14 +223,22 @@
 - ✅ Публикация только при нажатии кнопки "Опубликовать"
 - ✅ Даже если одна платформа упадёт с ошибкой, другая всё равно опубликуется
 
-### Секреты (уже настроены):
+### Секреты:
+
 **Telegram:**
-- `TELEGRAM_BOT_TOKEN` - токен бота @kupetzvplyuse_bot
-- `TELEGRAM_CHANNEL_ID` - ID канала @kupetzvplyuse
+- `TELEGRAM_BOT_TOKEN` - токен бота @kupetzvplyuse_bot (получить у @BotFather)
+- `TELEGRAM_CHANNEL_ID` - ID канала @kupetzvplyuse (начинается с `-100`, например: `-1001234567890`)
+
+⚠️ **ВАЖНО: Как получить правильный TELEGRAM_CHANNEL_ID:**
+1. Добавьте бота @kupetzvplyuse_bot в канал @kupetzvplyuse как администратора с правом публикации
+2. Опубликуйте любое сообщение в канале
+3. Откройте: `https://api.telegram.org/bot<BOT_TOKEN>/getUpdates`
+4. Найдите `"chat":{"id":-1001234567890` — это и есть Channel ID
+5. Обновите секрет `TELEGRAM_CHANNEL_ID` на это значение (с минусом!)
 
 **ВКонтакте:**
-- `VK_ACCESS_TOKEN` - токен доступа VK API
-- `VK_GROUP_ID` - ID сообщества @kupetzvplyuse
+- `VK_ACCESS_TOKEN` - токен доступа VK API (получить в настройках сообщества → Работа с API)
+- `VK_GROUP_ID` - ID сообщества @kupetzvplyuse (только цифры: `235859596`)
 
 ### Как проверить публикацию:
 
