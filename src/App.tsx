@@ -12,6 +12,7 @@ import NotFound from "./pages/NotFound";
 import ChatGPTPage from "./pages/ChatGPTPage";
 import NewsPage from "./pages/NewsPage";
 import AdminNewsPage from "./pages/AdminNewsPage";
+import CatalogPage from "./pages/CatalogPage";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/cabinet" element={<ClientCabinet />} />
           <Route path="/chatgpt" element={<ChatGPTPage />} />
           <Route path="/news" element={<NewsPage />} />
+          <Route path="/catalog" element={<CatalogPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
