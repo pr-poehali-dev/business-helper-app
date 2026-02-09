@@ -1,0 +1,14 @@
+{
+  "tests": [
+    {
+      "name": "Получение Channel ID - успешный запрос",
+      "method": "GET",
+      "path": "/",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "channels": "array"
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}
