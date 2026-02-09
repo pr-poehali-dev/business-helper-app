@@ -22,6 +22,9 @@ def publish_to_telegram(bot_token: str, channel_id: str, title: str, description
     message = '\n'.join(message_parts)
     telegram_api_url = f'https://api.telegram.org/bot{bot_token}'
     
+    print(f'[Telegram] Sending to channel: {channel_id}')
+    print(f'[Telegram] Has image: {bool(image_url)}')
+    
     if image_url:
         response = requests.post(
             f'{telegram_api_url}/sendPhoto',
@@ -45,7 +48,9 @@ def publish_to_telegram(bot_token: str, channel_id: str, title: str, description
             timeout=10
         )
     
-    return response.json()
+    result = response.json()
+    print(f'[Telegram] Response: {result}')
+    return result
 
 
 def publish_to_vk(access_token: str, group_id: str, title: str, description: str, source_url: str, image_url: str) -> dict:
@@ -60,14 +65,28 @@ def publish_to_vk(access_token: str, group_id: str, title: str, description: str
     
     message = '\n'.join(message_parts)
     
+    # Преобразуем group_id в число (убираем префикс club/public/event если есть)
+    try:
+        # Удаляем префиксы club, public, event и точку в конце
+        clean_id = group_id.replace('club', '').replace('public', '').replace('event', '').rstrip('.')
+        owner_id = -int(clean_id)
+    except ValueError:
+        print(f'[VK] ERROR: Invalid group_id: {group_id}')
+        return {'error': {'error_msg': f'Invalid group_id: {group_id}'}}
+    
+    print(f'[VK] Posting to group: {owner_id} (from group_id: {group_id})')
+    print(f'[VK] Has image: {bool(image_url)}')
+    
     # Параметры для wall.post
     params = {
         'access_token': access_token,
-        'owner_id': f'-{group_id}',
+        'owner_id': owner_id,
         'from_group': 1,
         'message': message,
         'v': '5.131'
     }
+    
+    print(f'[VK] Params: {params}')
     
     # Если есть изображение, сначала загружаем его
     if image_url:
@@ -121,13 +140,15 @@ def publish_to_vk(access_token: str, group_id: str, title: str, description: str
             print(f'VK photo upload error: {e}')
     
     # Публикуем пост
-    response = requests.post(
+    response = requests.get(
         'https://api.vk.com/method/wall.post',
         params=params,
         timeout=10
     )
     
-    return response.json()
+    result = response.json()
+    print(f'[VK] Response: {result}')
+    return result
 
 
 def handler(event: dict, context) -> dict:
@@ -180,8 +201,8 @@ def handler(event: dict, context) -> dict:
         cursor = conn.cursor(cursor_factory=RealDictCursor)
         
         # Получаем данные новости
-        query = f"SELECT * FROM {schema}.news_articles WHERE id = %s"
-        cursor.execute(query, (news_id,))
+        query = f"SELECT * FROM {schema}.news_articles WHERE id = {news_id}"
+        cursor.execute(query)
         news = cursor.fetchone()
         
         if not news:
@@ -200,6 +221,10 @@ def handler(event: dict, context) -> dict:
         description = news['description'] or ''
         source_url = news['source_url'] or ''
         image_url = news['image_url'] or ''
+        
+        print(f'[Handler] Publishing news #{news_id}: {title[:50]}...')
+        print(f'[Handler] Has Telegram creds: {bool(telegram_bot_token and telegram_channel_id)}')
+        print(f'[Handler] Has VK creds: {bool(vk_access_token and vk_group_id)}')
         
         results = {
             'telegram': {'success': False, 'error': None},
@@ -255,11 +280,11 @@ def handler(event: dict, context) -> dict:
             
             update_query = f"""
                 UPDATE {schema}.news_articles 
-                SET status = 'published', published_date = %s
-                WHERE id = %s
+                SET status = 'published', published_date = '{published_date}'
+                WHERE id = {news_id}
             """
             
-            cursor.execute(update_query, (published_date, news_id))
+            cursor.execute(update_query)
             conn.commit()
         
         cursor.close()
