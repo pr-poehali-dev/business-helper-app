@@ -25,6 +25,7 @@ const CatalogPage = () => {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [partnerOffers, setPartnerOffers] = useState<PartnerOffer[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sortBy, setSortBy] = useState<'default' | 'price-asc' | 'price-desc' | 'rating'>('default');
 
   useEffect(() => {
     loadPartnerOffers();
@@ -56,6 +57,23 @@ const CatalogPage = () => {
     ? partnerOffers 
     : partnerOffers.filter(offer => offer.category === selectedCategory);
 
+  const sortedOffers = [...filteredOffers].sort((a, b) => {
+    if (sortBy === 'price-asc') {
+      const priceA = parseFloat(a.price.replace(/[^\d]/g, ''));
+      const priceB = parseFloat(b.price.replace(/[^\d]/g, ''));
+      return priceA - priceB;
+    }
+    if (sortBy === 'price-desc') {
+      const priceA = parseFloat(a.price.replace(/[^\d]/g, ''));
+      const priceB = parseFloat(b.price.replace(/[^\d]/g, ''));
+      return priceB - priceA;
+    }
+    if (sortBy === 'rating') {
+      return b.rating - a.rating;
+    }
+    return 0;
+  });
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -70,7 +88,7 @@ const CatalogPage = () => {
         </div>
 
         {/* Фильтры по категориям */}
-        <div className="flex flex-wrap justify-center gap-3 mb-10">
+        <div className="flex flex-wrap justify-center gap-3 mb-6">
           {categories.map((category) => (
             <Button
               key={category.id}
@@ -88,6 +106,48 @@ const CatalogPage = () => {
           ))}
         </div>
 
+        {/* Сортировка */}
+        <div className="flex flex-wrap items-center justify-center gap-3 mb-10">
+          <span className="text-sm text-gray-600 font-medium">Сортировать:</span>
+          <div className="flex gap-2">
+            <Button
+              onClick={() => setSortBy('default')}
+              variant={sortBy === 'default' ? "default" : "outline"}
+              size="sm"
+              className={sortBy === 'default' ? 'bg-blue-600' : ''}
+            >
+              По умолчанию
+            </Button>
+            <Button
+              onClick={() => setSortBy('price-asc')}
+              variant={sortBy === 'price-asc' ? "default" : "outline"}
+              size="sm"
+              className={sortBy === 'price-asc' ? 'bg-blue-600' : ''}
+            >
+              <Icon name="ArrowUp" className="mr-1" size={14} />
+              Цена
+            </Button>
+            <Button
+              onClick={() => setSortBy('price-desc')}
+              variant={sortBy === 'price-desc' ? "default" : "outline"}
+              size="sm"
+              className={sortBy === 'price-desc' ? 'bg-blue-600' : ''}
+            >
+              <Icon name="ArrowDown" className="mr-1" size={14} />
+              Цена
+            </Button>
+            <Button
+              onClick={() => setSortBy('rating')}
+              variant={sortBy === 'rating' ? "default" : "outline"}
+              size="sm"
+              className={sortBy === 'rating' ? 'bg-blue-600' : ''}
+            >
+              <Icon name="Star" className="mr-1" size={14} />
+              Рейтинг
+            </Button>
+          </div>
+        </div>
+
         {/* Список предложений */}
         {loading ? (
           <div className="text-center py-20">
@@ -101,7 +161,7 @@ const CatalogPage = () => {
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredOffers.map((offer) => (
+            {sortedOffers.map((offer) => (
               <div
                 key={offer.id}
                 className="bg-white rounded-xl shadow-sm hover:shadow-lg transition-all p-6 border border-gray-200 flex flex-col"
