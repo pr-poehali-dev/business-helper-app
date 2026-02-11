@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Index from "./pages/Index";
 import AdminPanel from "./pages/AdminPanel";
+import Admin from "./pages/Admin";
 import ClientCabinet from "./pages/ClientCabinet";
 import NotFound from "./pages/NotFound";
 import ChatGPTPage from "./pages/ChatGPTPage";
@@ -26,6 +27,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/admin" element={<AdminPanel />} />
+          <Route path="/admin/ads" element={<Admin />} />
           <Route path="/admin/news" element={<AdminNewsPage />} />
           <Route path="/cabinet" element={<ClientCabinet />} />
           <Route path="/chatgpt" element={<ChatGPTPage />} />
