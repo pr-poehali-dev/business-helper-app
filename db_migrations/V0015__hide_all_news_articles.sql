@@ -1,0 +1,1 @@
+UPDATE t_p81470733_business_helper_app.news_articles SET is_published = false, status = 'draft';
